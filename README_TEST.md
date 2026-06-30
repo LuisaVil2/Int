@@ -1,18 +1,25 @@
 # Intérprete médico — uso
 
-## 🔴 EN VIVO (el bot oye y traduce en tiempo real)
-Pa probar con un video de YouTube como lo vas a usar:
+## 🟢 GUI (recomendado) — elegir audio y activar el bot
 ```powershell
-# 1) Enciende el bot
-.\.venv\Scripts\python.exe -m src.live_interpreter
-# 2) Reproduce el video de YouTube. El bot lo oye por el audio del sistema (loopback)
-#    y va imprimiendo la traducción en vivo. Ctrl+C para apagar.
+.\.venv\Scripts\python.exe -m src.gui
 ```
-- El video debe sonar por el **dispositivo de salida por defecto** de Windows.
-- `--mic` usa micrófono en vez del audio del sistema.
-- `--list-devices` lista parlantes/micrófonos.
-- `--model medium` = más calidad (más lento). STT = Whisper local, lag ~3-5s.
-- Para baja latencia real: conseguir `DEEPGRAM_API_KEY` (streaming).
+1. **Entra (oye):** elige `[Sistema] <tu salida>` para que el bot oiga el video de YouTube
+   (loopback), o `[Micrófono] ...`.
+2. **Sale (voz):** elige por dónde habla el bot. ⚠ Usa un dispositivo DISTINTO al que oye,
+   o se oirá a sí mismo (el modo half-duplex lo mitiga, pero mejor separarlos).
+3. Marca/desmarca **Hablar la traducción (voz)**.
+4. **▶ Activar bot** → reproduce el video. Verás transcripción + traducción en vivo y la
+   voz por el dispositivo elegido. **■ Apagar** para parar.
+
+STT = Deepgram (nova-3, multilingüe) si hay `DEEPGRAM_API_KEY`; si no, Whisper local.
+TTS = edge-tts (gratis, voz femenina ES/EN). Sin ElevenLabs.
+
+## 🔴 EN VIVO por consola (sin GUI)
+```powershell
+.\.venv\Scripts\python.exe -m src.live_interpreter      # texto en vivo, sin voz
+```
+- `--mic` micrófono · `--list-devices` lista · `--model medium` más calidad.
 
 ## Test por video descargado (batch, un comando)
 ```powershell

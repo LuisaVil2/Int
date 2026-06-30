@@ -39,28 +39,66 @@ def transcribe_whisper(audio_path: str, model_size: str | None = None) -> list[S
     return out
 
 
-# ---------- Deepgram (diarización + multi-idioma, FIX #1 y #3) ----------
-def transcribe_deepgram(audio_path: str, api_key: str,
-                        model: str = "nova-2-medical") -> list[Segment]:
-    from deepgram import DeepgramClient, PrerecordedOptions, FileSource  # type: ignore
+# ---------- Deepgram vía REST (SDK v7 cambió la API; REST es estable) ----------
+# nova-3 + language=multi = multilingüe EN/ES con code-switching.
+DG_URL = "https://api.deepgram.com/v1/listen"
 
-    dg = DeepgramClient(api_key)
+
+def _dg_post(wav_bytes: bytes, api_key: str, model: str, params: dict) -> dict:
+    import httpx
+
+    q = {"model": model, "punctuate": "true", "smart_format": "true", **params}
+    r = httpx.post(DG_URL, params=q, content=wav_bytes,
+                   headers={"Authorization": f"Token {api_key}", "Content-Type": "audio/wav"},
+                   timeout=60)
+    r.raise_for_status()
+    return r.json()
+
+
+def transcribe_deepgram(audio_path: str, api_key: str, model: str = "nova-3") -> list[Segment]:
     with open(audio_path, "rb") as f:
-        payload: FileSource = {"buffer": f.read()}
-    # diarize=True separa hablantes; language='multi' detecta EN/ES por utterance;
-    # nova-2-medical = modelo afinado a vocabulario clínico (menos "exophagus").
-    opts = PrerecordedOptions(model=model, detect_language=True, punctuate=True,
-                              utterances=True, diarize=True, smart_format=True,
-                              language="multi")
-    resp = dg.listen.rest.v("1").transcribe_file(payload, opts)
+        data = f.read()
+    resp = _dg_post(data, api_key, model, {"language": "multi", "utterances": "true",
+                                           "diarize": "true"})
     out: list[Segment] = []
-    for u in (resp.results.utterances or []):
-        words = getattr(u, "words", None) or []
-        speaker = getattr(words[0], "speaker", None) if words else None
-        out.append(Segment(start=round(u.start, 2), text=u.transcript.strip(),
-                           lang=getattr(u, "language", None), speaker=speaker,
-                           asr_confidence=float(getattr(u, "confidence", 0.85) or 0.85)))
+    for u in resp.get("results", {}).get("utterances", []) or []:
+        words = u.get("words") or []
+        out.append(Segment(start=round(u.get("start", 0.0), 2),
+                           text=(u.get("transcript") or "").strip(),
+                           lang=u.get("language") or (words[0].get("language") if words else None),
+                           speaker=words[0].get("speaker") if words else None,
+                           asr_confidence=float(u.get("confidence", 0.85) or 0.85)))
     return out
+
+
+# ---------- Deepgram por-utterance desde buffer numpy (para modo en vivo) ----------
+def np_to_wav_bytes(samples, sr: int = 16000) -> bytes:
+    import io
+    import wave
+    import numpy as np
+
+    pcm = (np.clip(samples, -1, 1) * 32767).astype("<i2").tobytes()
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(sr)
+        w.writeframes(pcm)
+    return buf.getvalue()
+
+
+def transcribe_np_deepgram(samples, sr, api_key: str,
+                           model: str = "nova-3") -> tuple[str, str | None, float]:
+    """Una utterance -> (texto, idioma, confianza). Para el bot en vivo."""
+    resp = _dg_post(np_to_wav_bytes(samples, sr), api_key, model, {"language": "multi"})
+    chans = resp.get("results", {}).get("channels", [])
+    if not chans or not chans[0].get("alternatives"):
+        return "", None, 0.0
+    ch = chans[0]
+    alt = ch["alternatives"][0]
+    words = alt.get("words") or []
+    lang = ch.get("detected_language") or (words[0].get("language") if words else None)
+    return (alt.get("transcript") or "").strip(), lang, float(alt.get("confidence", 0.85) or 0.85)
 
 
 # ---------- Subtítulos VTT (gratis, vía yt-dlp) ----------
@@ -117,7 +155,7 @@ def get_segments(audio_path: str | None, vtt_path: str | None) -> list[Segment]:
     if audio_path and dg_key:
         try:
             return transcribe_deepgram(audio_path, dg_key,
-                                       os.getenv("DEEPGRAM_MODEL", "nova-2-medical"))
+                                       os.getenv("DEEPGRAM_MODEL", "nova-3"))
         except Exception as e:  # noqa
             print(f"[stt] Deepgram falló ({e}); intento Whisper")
     if audio_path:
