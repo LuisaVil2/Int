@@ -1,3 +1,27 @@
+# Intérprete médico — uso
+
+## 🔴 EN VIVO (el bot oye y traduce en tiempo real)
+Pa probar con un video de YouTube como lo vas a usar:
+```powershell
+# 1) Enciende el bot
+.\.venv\Scripts\python.exe -m src.live_interpreter
+# 2) Reproduce el video de YouTube. El bot lo oye por el audio del sistema (loopback)
+#    y va imprimiendo la traducción en vivo. Ctrl+C para apagar.
+```
+- El video debe sonar por el **dispositivo de salida por defecto** de Windows.
+- `--mic` usa micrófono en vez del audio del sistema.
+- `--list-devices` lista parlantes/micrófonos.
+- `--model medium` = más calidad (más lento). STT = Whisper local, lag ~3-5s.
+- Para baja latencia real: conseguir `DEEPGRAM_API_KEY` (streaming).
+
+## Test por video descargado (batch, un comando)
+```powershell
+.\.venv\Scripts\python.exe -m src.youtube_test "<URL de YouTube>" --max 30
+# -> out/result.md con tabla SRC | BOT | route | emerg
+```
+
+---
+
 # Test offline del intérprete médico (slice de hoy)
 
 Prueba el núcleo de calidad — STT → terminología → traducción DeepSeek — contra
