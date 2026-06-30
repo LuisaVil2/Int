@@ -1,0 +1,1 @@
+{"manifest_version":3,"name":"Medical Interpreter Test Capture","version":"0.2.0","permissions":["tabCapture","activeTab","storage"],"host_permissions":["ws://localhost:8000/*","http://localhost:8000/*"],"background":{"service_worker":"background.js"},"action":{"default_popup":"popup.html"},"content_scripts":[{"matches":["<all_urls>"],"js":["content.js"]}]}
