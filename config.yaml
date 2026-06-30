@@ -1,0 +1,11 @@
+providers: {asr: deepgram, llm: deepseek, tts: xtts}
+languages: [en, es]
+voice: {default_reference_wav: voices/reference.wav}
+qa: {delay_seconds: 2.5, thresholds: {automatic_approval: 95, qa_review: 80}}
+emergency: {force_qa_review: true}
+models: {deepgram: nova-2-medical, deepseek: deepseek-chat}
+streaming: {chunk_size: 4096, sample_rate: 48000, channels: 1}
+database: {postgres_dsn: postgresql://postgres:postgres@postgres:5432/medical_interpreter}
+redis: {url: redis://redis:6379/0}
+qdrant: {url: http://qdrant:6333}
+server: {host: 0.0.0.0, port: 8000}
