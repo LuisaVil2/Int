@@ -1,0 +1,11 @@
+# Secretos — NUNCA commitear
+.env
+API.txt
+*.key
+
+# Entorno y artefactos
+.venv/
+audio/
+out/
+__pycache__/
+*.pyc

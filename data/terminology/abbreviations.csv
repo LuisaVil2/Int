@@ -1,0 +1,13 @@
+abbr,expansion_en,expansion_es,specialty
+BP,blood pressure,presión arterial,general
+SOB,shortness of breath,dificultad para respirar,general
+Rx,prescription,receta médica,general
+NPO,nothing by mouth,nada por vía oral,general
+HR,heart rate,frecuencia cardíaca,cardiology
+Hx,history,antecedentes,general
+Dx,diagnosis,diagnóstico,general
+Tx,treatment,tratamiento,general
+OTC,over the counter,de venta libre,general
+PRN,as needed,según se necesite,general
+BID,twice a day,dos veces al día,general
+TID,three times a day,tres veces al día,general

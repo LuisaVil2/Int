@@ -1,0 +1,27 @@
+term_en,term_es,notes,specialty
+shortness of breath,dificultad para respirar,"síntoma; NO 'corto de aliento'",general
+chest pain,dolor de pecho,"posible emergencia",cardiology
+blood pressure,presión arterial,,cardiology
+high blood pressure,presión arterial alta,hipertensión,cardiology
+heart rate,frecuencia cardíaca,,cardiology
+miscarriage,aborto espontáneo,"sensible; tono cuidadoso",obgyn
+pregnant,embarazada,,obgyn
+swelling,hinchazón,,general
+dizziness,mareo,,general
+nausea,náusea,,general
+fever,fiebre,,general
+cough,tos,,general
+rash,sarpullido,,general
+numbness,entumecimiento,,general
+blurred vision,visión borrosa,,general
+side effects,efectos secundarios,,general
+prescription,receta médica,,general
+refill,resurtido,"de receta",general
+appointment,cita,,general
+follow-up,seguimiento,"cita de control",general
+allergy,alergia,,general
+allergic reaction,reacción alérgica,,general
+diabetes,diabetes,,endocrinology
+blood sugar,azúcar en sangre,glucemia,endocrinology
+stroke,derrame cerebral,"o 'accidente cerebrovascular'",neurology
+seizure,convulsión,,neurology
