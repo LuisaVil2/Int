@@ -46,13 +46,24 @@ class App:
         if self.outputs:
             self.out_combo.current(0)
 
+        opts = ttk.Frame(top)
+        opts.grid(row=2, column=1, sticky="w", padx=6, pady=3)
+        ttk.Label(opts, text="Especialidad:").pack(side="left")
+        self.spec_var = tk.StringVar(value="general")
+        ttk.Combobox(opts, textvariable=self.spec_var, width=14, state="readonly",
+                     values=self._specialties()).pack(side="left", padx=(4, 14))
+        ttk.Label(opts, text="Whisper (sin key Deepgram):").pack(side="left")
+        self.model_var = tk.StringVar(value="small")
+        ttk.Combobox(opts, textvariable=self.model_var, width=8, state="readonly",
+                     values=["tiny", "base", "small", "medium"]).pack(side="left", padx=4)
+
         self.tts_var = tk.BooleanVar(value=True)
         ttk.Checkbutton(top, text="Hablar la traducción (voz)", variable=self.tts_var)\
-            .grid(row=2, column=1, sticky="w", padx=6, pady=3)
+            .grid(row=3, column=1, sticky="w", padx=6, pady=3)
 
         ttk.Label(top, text="⚠ Si la voz sale por el MISMO dispositivo que el bot oye, puede "
                             "oírse a sí mismo.\nUsa salidas distintas (ej: oye el sistema, habla por audífonos).",
-                  foreground="#a05000").grid(row=3, column=1, sticky="w", padx=6)
+                  foreground="#a05000").grid(row=4, column=1, sticky="w", padx=6)
 
         btns = ttk.Frame(root, padding=(10, 0))
         btns.pack(fill="x")
@@ -72,6 +83,18 @@ class App:
 
         self.root.after(100, self._drain)
 
+    @staticmethod
+    def _specialties() -> list[str]:
+        """Especialidades presentes en los glosarios (más 'general')."""
+        import os
+        try:
+            from .terminology import TerminologyIndex
+            idx = TerminologyIndex.load(os.getenv("TERMINOLOGY_DIR", "data/terminology"))
+            specs = {t.specialty for t in idx.terms} - {"drug"}
+        except Exception:  # noqa
+            specs = set()
+        return sorted(specs | {"general"})
+
     # eventos del engine (en hilos) -> cola; la GUI los drena en el hilo principal
     def _on_event(self, kind: str, data: dict):
         self.events.put((kind, data))
@@ -86,7 +109,10 @@ class App:
                 self._append(f"[{data['lang'].upper()}] {data['text']}\n", "src")
             elif kind == "translation":
                 arrow = f"{data['src_lang'].upper()}→{data['tgt_lang'].upper()}"
-                self._append(f"  ➜ [{arrow}] {data['text']}   ({data['latency_ms']}ms)\n\n", "tr")
+                lat = f"{data['latency_ms']}ms"
+                if data.get("first_ms"):
+                    lat = f"1ª frase {data['first_ms']}ms · total {lat}"
+                self._append(f"  ➜ [{arrow}] {data['text']}   ({lat})\n\n", "tr")
             elif kind == "status":
                 self.status.config(text=data["text"]); self._append(f"· {data['text']}\n", "st")
             elif kind == "error":
@@ -100,7 +126,9 @@ class App:
     def start(self):
         in_choice = self.inputs[self.in_combo.current()]
         out_index = self.outputs[self.out_combo.current()]["index"] if self.outputs else None
-        self.engine = LiveEngine(self._on_event, in_choice, out_index, tts_on=self.tts_var.get())
+        self.engine = LiveEngine(self._on_event, in_choice, out_index,
+                                 tts_on=self.tts_var.get(), model=self.model_var.get(),
+                                 specialty=self.spec_var.get())
         self.engine.start()
         self.start_btn.config(state="disabled")
         self.stop_btn.config(state="normal")

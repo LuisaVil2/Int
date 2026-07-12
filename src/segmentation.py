@@ -28,8 +28,8 @@ class Turn:
     speaker: int | None = None
 
 
-# corta en límites de frase conservando el delimitador; respeta ¿ ¡
-_SENT = re.compile(r"[^.!?¿¡]*[.!?]+|\S[^.!?¿¡]*$")
+# corta en límites de frase conservando el delimitador; conserva ¿ ¡ iniciales
+_SENT = re.compile(r"[¿¡]?[^.!?¿¡]*[.!?]+|[¿¡]?\S[^.!?¿¡]*$")
 
 
 def split_sentences(text: str) -> list[str]:

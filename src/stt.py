@@ -5,10 +5,13 @@ Para el test offline, la dirección de traducción se decide por el idioma detec
 """
 from __future__ import annotations
 
+import json
 import os
 import re
+import threading
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
 
 @dataclass
@@ -45,14 +48,28 @@ DG_URL = "https://api.deepgram.com/v1/listen"
 
 
 def _dg_post(wav_bytes: bytes, api_key: str, model: str, params: dict) -> dict:
+    import time
+
     import httpx
 
     q = {"model": model, "punctuate": "true", "smart_format": "true", **params}
-    r = httpx.post(DG_URL, params=q, content=wav_bytes,
-                   headers={"Authorization": f"Token {api_key}", "Content-Type": "audio/wav"},
-                   timeout=60)
-    r.raise_for_status()
-    return r.json()
+    last: Exception | None = None
+    for attempt in range(3):
+        try:
+            r = httpx.post(DG_URL, params=q, content=wav_bytes,
+                           headers={"Authorization": f"Token {api_key}",
+                                    "Content-Type": "audio/wav"},
+                           timeout=60)
+            r.raise_for_status()
+            return r.json()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code < 500 and e.response.status_code != 429:
+                raise          # error de cliente (key mala, payload): reintentar no ayuda
+            last = e
+        except httpx.TransportError as e:   # red caída, timeout, reset
+            last = e
+        time.sleep(0.5 * (attempt + 1))
+    raise last
 
 
 def transcribe_deepgram(audio_path: str, api_key: str, model: str = "nova-3") -> list[Segment]:
@@ -99,6 +116,140 @@ def transcribe_np_deepgram(samples, sr, api_key: str,
     words = alt.get("words") or []
     lang = ch.get("detected_language") or (words[0].get("language") if words else None)
     return (alt.get("transcript") or "").strip(), lang, float(alt.get("confidence", 0.85) or 0.85)
+
+
+# ---------- Deepgram live (WebSocket streaming, para el bot en vivo) ----------
+DG_WS_URL = "wss://api.deepgram.com/v1/listen"
+
+
+class DeepgramLive:
+    """STT streaming: manda PCM continuo por WebSocket; Deepgram hace el endpointing
+    en el servidor y esta clase entrega utterances completas por callback.
+
+    on_utterance(text, lang, confidence) se llama desde el hilo receptor cuando llega
+    un resultado con speech_final=True. nova-3 + language=multi soporta code-switching
+    EN/ES; el idioma se toma por mayoría de las words del utterance.
+
+    Si la conexión se cae (red, timeout del server), reconecta sola con backoff;
+    on_error solo se llama cuando los reintentos se agotan.
+    """
+
+    RECONNECT_DELAYS = (0.5, 1.0, 2.0)
+
+    def __init__(self, api_key: str, model: str = "nova-3", sr: int = 16000,
+                 on_utterance: Callable[[str, str | None, float], None] | None = None,
+                 on_error: Callable[[Exception], None] | None = None,
+                 endpointing_ms: int = 400):
+        self.api_key = api_key
+        self.model = model
+        self.sr = sr
+        self.on_utterance = on_utterance
+        self.on_error = on_error
+        self.endpointing_ms = endpointing_ms
+        self._ws = None
+        self._rx: threading.Thread | None = None
+        self._closed = False
+        self._gen = 0                      # generación de conexión (para reconexión)
+        self._lock = threading.Lock()
+
+    def start(self):
+        self._connect()
+        self._rx = threading.Thread(target=self._recv_loop, daemon=True)
+        self._rx.start()
+
+    def _connect(self):
+        from urllib.parse import urlencode
+
+        from websockets.sync.client import connect
+
+        params = {"model": self.model, "language": "multi", "encoding": "linear16",
+                  "sample_rate": str(self.sr), "channels": "1",
+                  "punctuate": "true", "smart_format": "true",
+                  "interim_results": "false", "endpointing": str(self.endpointing_ms)}
+        self._ws = connect(f"{DG_WS_URL}?{urlencode(params)}",
+                           additional_headers={"Authorization": f"Token {self.api_key}"})
+
+    def _reconnect(self, gen: int, cause: Exception) -> bool:
+        """Reintenta la conexión con backoff. True si hay conexión viva (esta llamada
+        u otro hilo ya reconectó); False si se agotaron los intentos (queda cerrada)."""
+        import time
+
+        with self._lock:
+            if self._closed:
+                return False
+            if gen != self._gen:           # otro hilo ya reconectó
+                return True
+            for delay in self.RECONNECT_DELAYS:
+                time.sleep(delay)
+                try:
+                    self._connect()
+                    self._gen += 1
+                    return True
+                except Exception:  # noqa
+                    continue
+            self._closed = True
+            if self.on_error:
+                self.on_error(cause)
+            return False
+
+    def send_np(self, samples) -> None:
+        """Manda un bloque float32 [-1,1] como PCM16. Silencio también cuenta: mantiene
+        viva la conexión (Deepgram corta tras ~10s sin audio)."""
+        import numpy as np
+
+        if self._closed or self._ws is None:
+            return
+        pcm = (np.clip(samples, -1, 1) * 32767).astype("<i2").tobytes()
+        gen = self._gen
+        try:
+            self._ws.send(pcm)
+        except Exception as e:  # noqa — el chunk se pierde; la conexión se recupera
+            self._reconnect(gen, e)
+
+    def _recv_loop(self):
+        while not self._closed:
+            gen = self._gen
+            # estado del utterance en curso; se descarta si la conexión se cae
+            parts: list[str] = []
+            langs: list[str] = []
+            confs: list[float] = []
+            try:
+                for raw in self._ws:
+                    msg = json.loads(raw)
+                    if msg.get("type") != "Results":
+                        continue
+                    alts = (msg.get("channel") or {}).get("alternatives") or [{}]
+                    alt = alts[0]
+                    text = (alt.get("transcript") or "").strip()
+                    if text:
+                        parts.append(text)
+                        confs.append(float(alt.get("confidence", 0.85) or 0.85))
+                        langs += [w["language"] for w in alt.get("words") or []
+                                  if w.get("language")]
+                    if msg.get("speech_final") and parts:
+                        utter = " ".join(parts)
+                        lang = max(set(langs), key=langs.count) if langs else None
+                        conf = sum(confs) / len(confs)
+                        parts, langs, confs = [], [], []
+                        if self.on_utterance:
+                            self.on_utterance(utter, lang, conf)
+            except Exception as e:  # noqa — conexión caída: intenta revivirla
+                if self._closed or not self._reconnect(gen, e):
+                    break
+            else:                       # el server cerró limpio (p. ej. timeout de audio)
+                if self._closed or not self._reconnect(gen, ConnectionError("closed by server")):
+                    break
+
+    def close(self):
+        self._closed = True
+        try:
+            self._ws.send(json.dumps({"type": "CloseStream"}))
+        except Exception:  # noqa
+            pass
+        try:
+            self._ws.close()
+        except Exception:  # noqa
+            pass
 
 
 # ---------- Subtítulos VTT (gratis, vía yt-dlp) ----------

@@ -107,7 +107,19 @@ data/terminology/       glosarios médicos CSV (EN↔ES, abreviaturas, fármacos
 
 ---
 
-## 6. Modelos y costos
+## 6. Tests
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/ -q
+```
+
+Cubren los módulos puros (sin red): segmentación/idioma, parser JSON + streaming
+incremental del LLM, splitter de frases para TTS, emergencias, confianza, memoria,
+terminología y utilidades de STT (VTT/WAV).
+
+---
+
+## 7. Modelos y costos
 
 | Componente | Por defecto | Nota |
 |---|---|---|
@@ -117,7 +129,7 @@ data/terminology/       glosarios médicos CSV (EN↔ES, abreviaturas, fármacos
 
 ---
 
-## 7. Privacidad
+## 8. Privacidad
 
 Esto maneja información médica sensible (PHI). **No usar con datos de pacientes reales**
 hasta resolver acuerdos de tratamiento de datos (BAA) — ver §11 de `Instrucciones.md`.
