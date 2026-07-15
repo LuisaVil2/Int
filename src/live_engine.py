@@ -1,13 +1,18 @@
 """Motor del intérprete en vivo. Usado por la GUI y por el CLI.
 
 Captura audio (loopback del sistema o micrófono) -> segmenta por energía ->
-STT (Deepgram si hay key, si no Whisper) -> DeepSeek traduce -> emite evento ->
-TTS (edge-tts) reproduce en el dispositivo de salida elegido.
+STT (Deepgram si hay key, si no Whisper; Deepgram->Whisper por turno si Deepgram falla) ->
+DeepSeek traduce -> emite evento -> TTS (Fish Speech, con fallback a edge-tts) reproduce
+en el dispositivo de salida elegido.
 
 Half-duplex: mientras el bot habla, descarta la captura para no oírse a sí mismo.
+
+Confiabilidad: un turno que falla (STT, red, etc.) se registra y se salta — NUNCA
+termina la sesión completa. Ver _process_one().
 """
 from __future__ import annotations
 
+import logging
 import os
 import queue
 import threading
@@ -15,11 +20,15 @@ import time
 
 import numpy as np
 
+from .logging_utils import configure_logging, log_turn, new_session_id
+
 SR = 16000
 FRAME = 1600
 SILENCE_HANG = 0.7
 MIN_SPEECH = 0.6
 MAX_UTTER = 15.0
+
+logger = logging.getLogger(__name__)
 
 
 def list_inputs() -> list[dict]:
@@ -55,9 +64,13 @@ class LiveEngine:
         self._speaking = threading.Event()   # half-duplex
         self._q: queue.Queue = queue.Queue()
         self._threads: list[threading.Thread] = []
+        self._whisper_model = None  # cache perezoso: solo se carga si se necesita
+        self._session_id = new_session_id()
+        self._turn_id = 0
 
     # ---------- ciclo de vida ----------
     def start(self):
+        configure_logging()
         self._stop.clear()
         self._threads = [
             threading.Thread(target=self._capture, daemon=True),
@@ -113,6 +126,32 @@ class LiveEngine:
     def _rms(x: np.ndarray) -> float:
         return float(np.sqrt(np.mean(x ** 2)) + 1e-9)
 
+    # ---------- STT con fallback Deepgram -> Whisper por turno ----------
+    def _get_whisper(self):
+        """Carga perezosa: solo la primera vez que realmente se necesita Whisper
+        (Deepgram no configurado, o Deepgram falló en este turno). Nunca recarga
+        el modelo una vez cacheado."""
+        if self._whisper_model is None:
+            from faster_whisper import WhisperModel
+            self._whisper_model = WhisperModel(self.model, device="cpu", compute_type="int8")
+        return self._whisper_model
+
+    def _transcribe(self, audio: np.ndarray, dg_key: str | None):
+        """-> (text, lang, stt_confidence, speaker_id, backend_name)."""
+        if dg_key:
+            try:
+                from .stt import transcribe_np_deepgram
+                text, lang, conf, speaker = transcribe_np_deepgram(
+                    audio, SR, dg_key, os.getenv("DEEPGRAM_MODEL", "nova-2-medical"))
+                return text, lang, conf, speaker, "deepgram"
+            except Exception as e:  # noqa
+                self._emit("status", text=f"Deepgram falló ({e}); Whisper para este turno")
+                logger.warning("deepgram_fallback_triggered", extra={"meta": {"error": str(e)}})
+        whisper = self._get_whisper()
+        segs, info = whisper.transcribe(audio, vad_filter=True, beam_size=1)
+        text = " ".join(s.text.strip() for s in segs).strip()
+        return text, info.language, 0.85, None, "whisper"
+
     # ---------- procesamiento ----------
     def _process(self):
         try:
@@ -122,64 +161,101 @@ class LiveEngine:
             from .terminology import TerminologyIndex
             from .segmentation import detect_lang
             from .memory import ConversationMemory
-            from .emergency import EmergencyClassifier, ALERT_EN
+            from .emergency import EmergencyClassifier
+            from .confidence import ConfidenceEngine
 
             dg_key = os.getenv("DEEPGRAM_API_KEY")
-            whisper = None
-            if not dg_key:
-                from faster_whisper import WhisperModel
-                whisper = WhisperModel(self.model, device="cpu", compute_type="int8")
             translator = DeepSeekTranslator()
             idx = TerminologyIndex.load(os.getenv("TERMINOLOGY_DIR", "data/terminology"))
             memory = ConversationMemory()
             emerg = EmergencyClassifier()
+            confidence_engine = ConfidenceEngine()
             self._emit("status", text=f"STT={'Deepgram' if dg_key else 'Whisper'} · LLM={translator.model}")
+        except Exception as e:  # noqa - fallas de arranque SÍ son fatales para la sesión
+            self._emit("error", text=f"Inicialización: {e}")
+            return
 
-            while not self._stop.is_set():
-                try:
-                    audio = self._q.get(timeout=0.3)
-                except queue.Empty:
-                    continue
-                # STT
-                if dg_key:
-                    from .stt import transcribe_np_deepgram
-                    text, lang, _ = transcribe_np_deepgram(audio, SR, dg_key,
-                                                           os.getenv("DEEPGRAM_MODEL", "nova-2-medical"))
-                else:
-                    segs, info = whisper.transcribe(audio, vad_filter=True, beam_size=1)
-                    text = " ".join(s.text.strip() for s in segs).strip()
-                    lang = info.language
-                if not text:
-                    continue
-                lang = detect_lang(text, fallback=lang) or lang or "en"
-                hits = idx.lookup(text, self.specialty)
-                term_block = "\n".join(hits) if hits else "(sin términos relevantes)"
-                self._emit("src", lang=lang, text=text)
+        while not self._stop.is_set():
+            try:
+                audio = self._q.get(timeout=0.3)
+            except queue.Empty:
+                continue
+            try:
+                self._process_one(audio, dg_key, translator, idx, detect_lang, memory,
+                                  emerg, confidence_engine)
+            except Exception as e:  # noqa - un turno roto NUNCA mata la sesión
+                self._emit("error", text=f"Turno omitido: {e}")
+                logger.exception("turn_failed")
 
-                t0 = time.perf_counter()
-                tr = translator.translate(text, lang, term_block, memory.context())
-                lat = round((time.perf_counter() - t0) * 1000)
-                out = tr.text
-                if emerg.classify(text)["is_emergency"] and tr.target_lang == "en" and "<UNCLEAR>" not in out:
-                    out += f"  {ALERT_EN}"
-                if not tr.needs_clarification:
-                    memory.add_turn(None, lang, text, tr.text)
-                self._emit("translation", src_lang=lang, tgt_lang=tr.target_lang,
-                           text=out, latency_ms=lat)
+    def _process_one(self, audio, dg_key, translator, idx, detect_lang, memory,
+                     emerg, confidence_engine) -> None:
+        from .emergency import ALERT_EN, ALERT_ES
+        from .confidence import ConfidenceInputs
 
-                if self.tts_on and out and "<UNCLEAR>" not in out:
-                    self._speak(out, tr.target_lang)
-        except Exception as e:  # noqa
-            self._emit("error", text=f"Proceso: {e}")
+        t_stt0 = time.perf_counter()
+        text, lang, stt_conf, speaker_id, stt_backend = self._transcribe(audio, dg_key)
+        stt_ms = round((time.perf_counter() - t_stt0) * 1000)
+        if not text:
+            return
 
-    def _speak(self, text: str, lang: str):
+        lang = detect_lang(text, fallback=lang) or lang or "en"
+        hits = idx.lookup(text, self.specialty)
+        term_block = "\n".join(hits) if hits else "(sin términos relevantes)"
+        self._emit("src", lang=lang, text=text, speaker=speaker_id)
+
+        t0 = time.perf_counter()
+        tr = translator.translate(text, lang, term_block, memory.context(limit=6))
+        lat = round((time.perf_counter() - t0) * 1000)
+        out = tr.text
+
+        em = emerg.classify(text)
+        if em["is_emergency"] and "<UNCLEAR>" not in out:
+            out += f"  {ALERT_EN if tr.target_lang == 'en' else ALERT_ES}"
+
+        if not tr.needs_clarification:
+            memory.add_turn(speaker_id, lang, text, tr.text)
+
+        inputs = ConfidenceInputs(
+            asr_confidence=stt_conf,
+            llm_confidence=tr.confidence,
+            # proxies heurísticos basados en aciertos de terminología, no señales calibradas.
+            terminology_certainty=0.9 if hits else 0.75,
+            glossary_match=min(1.0, len(hits) / 5),
+        )
+        score = confidence_engine.score(inputs)
+        route = confidence_engine.route(score)
+        if em["force_qa_review"] and route == "automatic_approval":
+            route = "qa_review"
+
+        self._turn_id += 1
+        self._emit("translation", src_lang=lang, tgt_lang=tr.target_lang,
+                   text=out, latency_ms=lat, stt_ms=stt_ms, stt_backend=stt_backend,
+                   speaker=speaker_id, confidence_score=score, route=route)
+        if route == "pause_manual_approval":
+            self._emit("needs_review", text=out, src_lang=lang, tgt_lang=tr.target_lang, score=score)
+
+        tts_ms = 0
+        if self.tts_on and out and "<UNCLEAR>" not in out:
+            tts_ms = self._speak(out, tr.target_lang)
+
+        log_turn(logger, session_id=self._session_id, turn_id=self._turn_id,
+                 source_text=text, output_text=out, lang=lang, target_lang=tr.target_lang,
+                 stt_ms=stt_ms, stt_backend=stt_backend, translation_ms=lat, tts_ms=tts_ms,
+                 total_ms=stt_ms + lat + tts_ms, confidence_score=score, route=route,
+                 speaker=speaker_id, is_emergency=em["is_emergency"])
+
+    def _speak(self, text: str, lang: str) -> int:
+        """Devuelve la latencia de síntesis (ms) para instrumentación; 0 si falló."""
+        t0 = time.perf_counter()
+        tts_ms = 0
         try:
             import sounddevice as sd
             from .tts import synthesize
 
             samples, sr = synthesize(text, lang)
+            tts_ms = round((time.perf_counter() - t0) * 1000)
             if samples.size == 0:
-                return
+                return tts_ms
             self._speaking.set()
             sd.play(samples, sr, device=self.output_index)
             sd.wait()
@@ -188,3 +264,4 @@ class LiveEngine:
         finally:
             time.sleep(0.15)          # deja morir el eco antes de re-escuchar
             self._speaking.clear()
+        return tts_ms

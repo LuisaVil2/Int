@@ -25,3 +25,82 @@ diabetes,diabetes,,endocrinology
 blood sugar,azúcar en sangre,glucemia,endocrinology
 stroke,derrame cerebral,"o 'accidente cerebrovascular'",neurology
 seizure,convulsión,,neurology
+sepsis,sepsis,"MedlinePlus: medlineplus.gov/sepsis.html",emergency
+appendicitis,apendicitis,"MedlinePlus: medlineplus.gov/appendicitis.html",emergency
+first aid,primeros auxilios,"MedlinePlus: medlineplus.gov/firstaid.html",emergency
+head trauma,traumatismo craneal,,emergency
+burn,quemadura,,emergency
+poisoning,envenenamiento o intoxicación,,emergency
+electrical injury,lesión eléctrica,,emergency
+shock,choque,"shock hipovolémico/séptico según causa",emergency
+triage,triaje,,emergency
+loss of consciousness,pérdida del conocimiento,,emergency
+syncope,síncope,"MedlinePlus: medlineplus.gov/ency/article",internal_medicine
+anemia,anemia,,internal_medicine
+acute kidney failure,insuficiencia renal aguda,,internal_medicine
+chronic kidney disease,enfermedad renal crónica,,internal_medicine
+dehydration,deshidratación,,internal_medicine
+edema,edema,,internal_medicine
+jaundice,ictericia,,internal_medicine
+fatigue,fatiga,,internal_medicine
+unintentional weight loss,pérdida de peso involuntaria,,internal_medicine
+altered mental status,estado mental alterado,,internal_medicine
+well-child visit,control del niño sano,"MedlinePlus: medlineplus.gov/spanish/ency/article/001928.htm",pediatrics
+toddler health,salud del niño pequeño,,pediatrics
+febrile seizure,convulsión febril,,pediatrics
+newborn,recién nacido,,pediatrics
+vaccine,vacuna,,pediatrics
+neonatal jaundice,ictericia neonatal,,pediatrics
+growth percentile,percentil de crecimiento,,pediatrics
+breast cancer,cáncer de seno,,oncology
+prostate cancer,cáncer de próstata,,oncology
+lung cancer,cáncer de pulmón,,oncology
+colorectal cancer,cáncer de colon y del recto,,oncology
+leukemia,leucemia,,oncology
+lymphoma,linfoma,,oncology
+melanoma,melanoma,,oncology
+chemotherapy,quimioterapia,,oncology
+radiation therapy,radioterapia,,oncology
+immunotherapy,inmunoterapia,,oncology
+biopsy,biopsia,,oncology
+brain tumor,tumor cerebral,,oncology
+benign tumor,tumor benigno,,oncology
+metastasis,metástasis,,oncology
+attention deficit hyperactivity disorder,trastorno de déficit de atención e hiperactividad,,psychiatry
+eating disorder,trastorno de la alimentación,,psychiatry
+anxiety,ansiedad,,psychiatry
+antidepressant,antidepresivo,,psychiatry
+autism spectrum disorder,trastorno del espectro autista,,psychiatry
+self-harm,autolesión,,psychiatry
+delirium,delirio,,psychiatry
+dementia,demencia,,psychiatry
+depression,depresión,,psychiatry
+postpartum depression,depresión posparto,,psychiatry
+schizophrenia,esquizofrenia,,psychiatry
+post-traumatic stress disorder,trastorno de estrés postraumático,,psychiatry
+obsessive-compulsive disorder,trastorno obsesivo-compulsivo,,psychiatry
+panic disorder,trastorno de pánico,,psychiatry
+bipolar disorder,trastorno bipolar,,psychiatry
+psychotic disorder,trastorno psicótico,,psychiatry
+hallucination,alucinación,,psychiatry
+suicidal ideation,ideación suicida,"tono cuidadoso",psychiatry
+anesthesia,anestesia,,surgery
+post-operative care,después de una cirugía,,surgery
+endoscopy,endoscopia,,surgery
+hysterectomy,histerectomía,,surgery
+mastectomy,mastectomía,,surgery
+hip replacement,reemplazo de cadera,,surgery
+knee replacement,reemplazo de rodilla,,surgery
+suture,sutura,,surgery
+wound dehiscence,dehiscencia de la herida,,surgery
+laparotomy,laparotomía,,surgery
+incision,incisión,,surgery
+tracheostomy,traqueotomía,,icu
+central venous catheter,catéter venoso central,,icu
+intubation,intubación,,icu
+mechanical ventilator,ventilador (soporte ventilatorio),,icu
+respiratory failure,insuficiencia respiratoria,,icu
+septic shock,choque séptico,,icu
+extracorporeal membrane oxygenation,oxigenación por membrana extracorpórea (ECMO),,icu
+life support,soporte vital,,icu
+sedation,sedación,,icu

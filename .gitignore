@@ -7,5 +7,7 @@ API.txt
 .venv/
 audio/
 out/
+logs/
 __pycache__/
 *.pyc
+.pytest_cache/

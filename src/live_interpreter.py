@@ -104,7 +104,14 @@ def main():
     from .terminology import TerminologyIndex
     from .segmentation import detect_lang
     from .memory import ConversationMemory
-    from .emergency import EmergencyClassifier, ALERT_EN
+    from .emergency import EmergencyClassifier, ALERT_EN, ALERT_ES
+    from .logging_utils import configure_logging, log_turn, new_session_id
+    import logging
+
+    configure_logging()
+    logger = logging.getLogger(__name__)
+    session_id = new_session_id()
+    turn_id = 0
 
     print("== Cargando intérprete en vivo ==")
     whisper = WhisperModel(args.model, device="cpu", compute_type="int8")
@@ -123,26 +130,38 @@ def main():
     try:
         while True:
             audio = out_q.get()
-            segs, info = whisper.transcribe(audio, vad_filter=True, beam_size=1)
-            text = " ".join(s.text.strip() for s in segs).strip()
-            if not text:
-                continue
-            lang = detect_lang(text) or info.language or "en"
-            hits = idx.lookup(text, args.specialty)
-            term_block = "\n".join(hits) if hits else "(sin términos relevantes)"
-            t0 = time.perf_counter()
-            tr = translator.translate(text, lang, term_block, memory.context())
-            lat = round((time.perf_counter() - t0) * 1000)
-            out_text = tr.text
-            em = emerg.classify(text)
-            if em["is_emergency"] and tr.target_lang == "en" and "<UNCLEAR>" not in out_text:
-                out_text += f"  {ALERT_EN}"
-            if not tr.needs_clarification:
-                memory.add_turn(None, lang, text, tr.text)
+            try:
+                t_stt0 = time.perf_counter()
+                segs, info = whisper.transcribe(audio, vad_filter=True, beam_size=1)
+                text = " ".join(s.text.strip() for s in segs).strip()
+                stt_ms = round((time.perf_counter() - t_stt0) * 1000)
+                if not text:
+                    continue
+                lang = detect_lang(text) or info.language or "en"
+                hits = idx.lookup(text, args.specialty)
+                term_block = "\n".join(hits) if hits else "(sin términos relevantes)"
+                t0 = time.perf_counter()
+                tr = translator.translate(text, lang, term_block, memory.context(limit=6))
+                lat = round((time.perf_counter() - t0) * 1000)
+                out_text = tr.text
+                em = emerg.classify(text)
+                if em["is_emergency"] and "<UNCLEAR>" not in out_text:
+                    out_text += f"  {ALERT_EN if tr.target_lang == 'en' else ALERT_ES}"
+                if not tr.needs_clarification:
+                    memory.add_turn(None, lang, text, tr.text)
 
-            arrow = f"{lang.upper()}→{tr.target_lang.upper()}"
-            print(f"  [{arrow}] {text}")
-            print(f"     ➜ {out_text}   ({lat}ms)\n")
+                turn_id += 1
+                log_turn(logger, session_id=session_id, turn_id=turn_id,
+                         source_text=text, output_text=out_text, lang=lang,
+                         target_lang=tr.target_lang, stt_ms=stt_ms, translation_ms=lat,
+                         is_emergency=em["is_emergency"])
+
+                arrow = f"{lang.upper()}→{tr.target_lang.upper()}"
+                print(f"  [{arrow}] {text}")
+                print(f"     ➜ {out_text}   ({lat}ms)\n")
+            except Exception as e:  # noqa - un turno roto no debe matar la sesión
+                print(f"  ✗ Turno omitido: {e}")
+                logger.exception("turn_failed")
     except KeyboardInterrupt:
         stop.set()
         print("\n== BOT APAGADO ==")

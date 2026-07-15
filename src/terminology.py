@@ -65,8 +65,12 @@ class TerminologyIndex:
         text = transcript.lower()
         hits: list[str] = []
         seen: set[str] = set()
+        # "general" (o sin especialidad) = sin filtro: todas las especialidades son
+        # candidatas. Solo se restringe cuando se pide una especialidad ESPECÍFICA
+        # (ej. "cardiology"), que además de lo suyo también ve "general" y "drug".
+        narrow = specialty and specialty != "general"
         for t in self.terms:
-            if specialty and t.specialty not in (specialty, "general", "drug"):
+            if narrow and t.specialty not in (specialty, "general", "drug"):
                 continue
             # match por palabra/substring del keyword
             if _contains(text, t.src) and t.line not in seen:

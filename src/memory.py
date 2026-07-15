@@ -16,10 +16,13 @@ class ConversationMemory:
         self.turns.append({"speaker": speaker, "source_lang": source_lang,
                            "source_text": source_text, "interpretation": interpretation})
 
-    def context(self) -> str:
+    def context(self, limit: int | None = None) -> str:
         if not self.turns:
             return "(inicio de la conversación, sin contexto previo)"
+        turns = list(self.turns)[-limit:] if limit else list(self.turns)
         return "\n".join(
-            f"[{t['source_lang']}] {t['source_text']} -> {t['interpretation']}"
-            for t in self.turns
+            (f"[{t['source_lang']}] (S{t['speaker']}) {t['source_text']} -> {t['interpretation']}"
+             if t.get("speaker") is not None
+             else f"[{t['source_lang']}] {t['source_text']} -> {t['interpretation']}")
+            for t in turns
         )
