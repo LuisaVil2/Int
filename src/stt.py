@@ -105,17 +105,26 @@ def np_to_wav_bytes(samples, sr: int = 16000) -> bytes:
 
 
 def transcribe_np_deepgram(samples, sr, api_key: str,
-                           model: str = "nova-3") -> tuple[str, str | None, float]:
-    """Una utterance -> (texto, idioma, confianza). Para el bot en vivo."""
-    resp = _dg_post(np_to_wav_bytes(samples, sr), api_key, model, {"language": "multi"})
+                           model: str = "nova-3") -> tuple[str, str | None, float, int | None]:
+    """Una utterance -> (texto, idioma, confianza, speaker_id). Para el bot en vivo.
+
+    speaker_id es diarización POR-UTTERANCE (cada llamada es un request independiente):
+    útil para distinguir hablantes superpuestos dentro de un mismo turno, pero NO es una
+    identidad estable entre turnos (el hablante "0" de esta utterance no necesariamente
+    es la misma persona física que el "0" de la próxima).
+    """
+    resp = _dg_post(np_to_wav_bytes(samples, sr), api_key, model,
+                    {"language": "multi", "diarize": "true"})
     chans = resp.get("results", {}).get("channels", [])
     if not chans or not chans[0].get("alternatives"):
-        return "", None, 0.0
+        return "", None, 0.0, None
     ch = chans[0]
     alt = ch["alternatives"][0]
     words = alt.get("words") or []
     lang = ch.get("detected_language") or (words[0].get("language") if words else None)
-    return (alt.get("transcript") or "").strip(), lang, float(alt.get("confidence", 0.85) or 0.85)
+    speaker = words[0].get("speaker") if words else None
+    return ((alt.get("transcript") or "").strip(), lang,
+            float(alt.get("confidence", 0.85) or 0.85), speaker)
 
 
 # ---------- Deepgram live (WebSocket streaming, para el bot en vivo) ----------

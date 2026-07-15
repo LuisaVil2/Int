@@ -1,0 +1,3 @@
+tts:
+  provider: fish
+  language_auto: true

@@ -11,3 +11,14 @@ OTC,over the counter,de venta libre,general
 PRN,as needed,según se necesite,general
 BID,twice a day,dos veces al día,general
 TID,three times a day,tres veces al día,general
+QID,four times a day,cuatro veces al día,general
+IV,intravenous,vía intravenosa,general
+IM,intramuscular,vía intramuscular,general
+PO,by mouth,vía oral,general
+SC,subcutaneous,vía subcutánea,general
+SL,sublingual,vía sublingual,general
+NG,nasogastric,vía nasogástrica,general
+STAT,immediately,de inmediato,general
+ICU,intensive care unit,unidad de cuidados intensivos,icu
+ER,emergency room,sala de emergencias,emergency
+CPR,cardiopulmonary resuscitation,reanimación cardiopulmonar (RCP),emergency
