@@ -41,7 +41,7 @@ class EdgeTTSProvider(BaseTTSProvider):
         return bytes(buf)
 
     def synthesize(self, text: str, lang: str) -> tuple[np.ndarray, int]:
-        voice = os.getenv(f"TTS_VOICE_{lang.upper()}") or self.VOICES[lang]
+        voice = self.config.get(f"voice_{lang}") or os.getenv(f"TTS_VOICE_{lang.upper()}") or self.VOICES[lang]
         mp3 = asyncio.run(self._mp3_bytes(text, voice))
         if not mp3:
             return np.zeros(0, dtype=np.float32), 16000

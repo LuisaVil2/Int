@@ -310,7 +310,6 @@ class LiveEngine:
         try:
             from .translate import DeepSeekTranslator
             from .terminology import TerminologyIndex
-            from .segmentation import detect_lang, normalize_turns
             from .memory import ConversationMemory
             from .emergency import EmergencyClassifier
             from .confidence import ConfidenceEngine
@@ -335,15 +334,23 @@ class LiveEngine:
             except queue.Empty:
                 continue
             try:
-                turns = normalize_turns([Segment(0, text, lang)])
-                for turn in turns:
-                    self._process_text_turn(turn.text, turn.lang, conf, None, stt_backend, None,
-                                            translator, idx, detect_lang, memory, emerg,
-                                            confidence_engine, stream_tts=True,
-                                            direction_resolved=True)
+                self.process_transcript(Segment(0, text, lang, asr_confidence=conf),
+                                        translator, idx, memory, emerg, confidence_engine,
+                                        stt_backend=stt_backend)
             except Exception:
                 self._review("turn_failed")
                 logger.warning("turn_failed")
+
+    def process_transcript(self, segment: Segment, translator, idx, memory, emerg,
+                           confidence_engine, *, stt_backend: str) -> None:
+        """Process one finalized transcript without starting an audio stream."""
+        from .segmentation import detect_lang, normalize_turns
+
+        for turn in normalize_turns([segment]):
+            self._process_text_turn(turn.text, turn.lang, segment.asr_confidence, turn.speaker,
+                                    stt_backend, None, translator, idx, detect_lang, memory,
+                                    emerg, confidence_engine, stream_tts=True,
+                                    direction_resolved=True)
 
     def _process_one(self, audio, dg_key, translator, idx, detect_lang, memory,
                      emerg, confidence_engine) -> None:

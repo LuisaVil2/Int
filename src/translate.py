@@ -76,6 +76,10 @@ _NEGATION = re.compile(
 
 
 def fidelity_issue(source: str, target: str) -> str | None:
+    return next(iter(fidelity_issues(source, target)), None)
+
+
+def fidelity_issues(source: str, target: str) -> tuple[str, ...]:
     def normalized_number(value):
         # Tres cifras tras un separador pueden indicar miles o milésimas.
         return value if re.search(r"[.,]\d{3}(?:[.,]|$)", value) else value.replace(",", ".")
@@ -87,13 +91,12 @@ def fidelity_issue(source: str, target: str) -> str | None:
         return [(normalized_number(_NUMBER.match(m.group()).group()), m.lastgroup)
                 for m in _DOSE.finditer(text)]
 
-    if numbers(source) != numbers(target):
-        return "numbers_changed"
-    if doses(source) != doses(target):
-        return "dose_units_changed"
-    if bool(_NEGATION.search(source)) != bool(_NEGATION.search(target)):
-        return "negation_changed"
-    return None
+    checks = (
+        ("numbers_changed", numbers(source) != numbers(target)),
+        ("dose_units_changed", doses(source) != doses(target)),
+        ("negation_changed", bool(_NEGATION.search(source)) != bool(_NEGATION.search(target))),
+    )
+    return tuple(rule for rule, changed in checks if changed)
 
 
 class LocalTranslator:

@@ -5,10 +5,29 @@ captura, STT, segmentación, traducción y revisión. La GUI puede hablar las tr
 que pasan el ruteo y las comprobaciones del turno completo.
 
 - [Auditoría de estabilización, resultados de pruebas y plan de fase 2](ENGINE_AUDIT.md)
+- [Simulación ficticia y revisión humana](SIMULATION.md)
 - [Especificación histórica](Instrucciones.md), [hallazgos históricos](FINDINGS.md) y [código rescatado](SALVAGE.md)
 
 Pipeline: **captura → Deepgram WebSocket o Whisper local → dirección EN↔ES → DeepSeek
 completo → validación y ruteo → síntesis opcional**.
+
+## Simulación local y QA
+
+La simulación usa el motor existente con transcripciones y respuestas ficticias
+deterministas. La revisión de escritorio guarda correcciones junto al resultado
+original y exporta métricas estructuradas. El flujo por defecto funciona sin claves,
+red ni dispositivos de audio.
+
+```powershell
+.\.venv\Scripts\python.exe -m src.simulation list
+.\.venv\Scripts\python.exe -m src.simulation run --scenario med-dose
+.\.venv\Scripts\python.exe -m src.simulation review
+.\.venv\Scripts\python.exe -m src.simulation metrics
+.\.venv\Scripts\python.exe -m src.simulation export --output out/simulation/evaluation.json
+```
+
+El [manual de simulación](SIMULATION.md) incluye el ejemplo completo, los criterios de
+severidad, las opciones de audio y los resultados de verificación.
 
 ---
 
