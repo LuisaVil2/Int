@@ -20,12 +20,12 @@ class _FakeTranslation:
 
 class _FakeTranslator:
     def translate(self, text, lang, term_block, context):
-        return _FakeTranslation()
+        return _FakeTranslation(text="Tengo fiebre.", confidence=1.0)
 
 
 class _FakeIdx:
     def lookup(self, text, specialty, limit=25):
-        return ["- fever = fiebre"]
+        return ["- fever = fiebre"] * 5
 
 
 def _detect_lang(text, fallback=None):
@@ -42,7 +42,7 @@ def test_events_carry_latency_and_speaker_fields(monkeypatch):
                         output_index=None, tts_on=False)
 
     def fake_transcribe(audio, dg_key):
-        return "I have a fever", "en", 0.92, 1, "deepgram"
+        return "I have a fever", "en", 1.0, 1, "deepgram"
 
     monkeypatch.setattr(engine, "_transcribe", fake_transcribe)
 
@@ -75,7 +75,7 @@ def test_emergency_utterance_forces_non_automatic_route(monkeypatch):
     events = []
     engine = LiveEngine(on_event=lambda k, d: events.append((k, d)),
                         input_choice={"kind": "mic", "name": "dummy"}, output_index=None,
-                        tts_on=False)
+                        tts_on=True)
 
     def fake_transcribe(audio, dg_key):
         return "I have chest pain and can't breathe", "en", 1.0, None, "deepgram"
@@ -84,7 +84,8 @@ def test_emergency_utterance_forces_non_automatic_route(monkeypatch):
 
     class _PerfectTranslator:
         def translate(self, text, lang, term_block, context):
-            return _FakeTranslation(confidence=1.0, target_lang="en")
+            return _FakeTranslation(text="Me duele el pecho y no puedo respirar.",
+                                    confidence=1.0, target_lang="es")
 
     engine._process_one(
         audio=np.zeros(10, dtype=np.float32), dg_key="fake",
@@ -94,8 +95,9 @@ def test_emergency_utterance_forces_non_automatic_route(monkeypatch):
     )
 
     tr_events = [d for k, d in events if k == "translation"]
-    assert tr_events[0]["route"] != "automatic_approval"
+    assert not tr_events
     review_events = [d for k, d in events if k == "needs_review"]
-    # con confianza perfecta pero force_qa_review, la ruta sube a qa_review (no pausa),
-    # así que no necesariamente hay needs_review -- pero la traducción SÍ trae el alert.
-    assert "Interpreter alert" in tr_events[0]["text"]
+    assert review_events[0]["route"] == "qa_review"
+    assert "chest_pain" in review_events[0]["emergency_labels"]
+    assert review_events[0]["draft"] == "Me duele el pecho y no puedo respirar."
+    assert engine._tts_q.empty()

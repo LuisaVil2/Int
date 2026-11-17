@@ -1,6 +1,7 @@
 """Clasificador de emergencias EN/ES — §11. Adaptado de LuisaVil2/Int (limpiado).
 
-El bot completa el turno y AÑADE una alerta para el proveedor si detecta keywords.
+Las coincidencias son señales para revisión, incluso si el síntoma está negado.
+El motor no añade estas señales al texto interpretado ni al audio.
 """
 from __future__ import annotations
 

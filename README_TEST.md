@@ -1,5 +1,9 @@
 # Intérprete médico — uso
 
+> Guía histórica. Para ejecutar la suite actual y preparar simulaciones ficticias, consulta
+> [README.md](README.md) y [ENGINE_AUDIT.md](ENGINE_AUDIT.md). Los comandos de video y los
+> resultados antiguos de esta página no forman parte de la prueba de estabilización.
+
 ## 🟢 GUI (recomendado) — elegir audio y activar el bot
 ```powershell
 .\.venv\Scripts\python.exe -m src.gui

@@ -84,7 +84,7 @@ def transcribe_deepgram(audio_path: str, api_key: str, model: str = "nova-3") ->
                            text=(u.get("transcript") or "").strip(),
                            lang=u.get("language") or (words[0].get("language") if words else None),
                            speaker=words[0].get("speaker") if words else None,
-                           asr_confidence=float(u.get("confidence", 0.85) or 0.85)))
+                           asr_confidence=float(u.get("confidence") or 0.0)))
     return out
 
 
@@ -124,7 +124,7 @@ def transcribe_np_deepgram(samples, sr, api_key: str,
     lang = ch.get("detected_language") or (words[0].get("language") if words else None)
     speaker = words[0].get("speaker") if words else None
     return ((alt.get("transcript") or "").strip(), lang,
-            float(alt.get("confidence", 0.85) or 0.85), speaker)
+            float(alt.get("confidence") or 0.0), speaker)
 
 
 # ---------- Deepgram live (WebSocket streaming, para el bot en vivo) ----------
@@ -135,12 +135,8 @@ class DeepgramLive:
     """STT streaming: manda PCM continuo por WebSocket; Deepgram hace el endpointing
     en el servidor y esta clase entrega utterances completas por callback.
 
-    on_utterance(text, lang, confidence) se llama desde el hilo receptor cuando llega
-    un resultado con speech_final=True. nova-3 + language=multi soporta code-switching
-    EN/ES; el idioma se toma por mayoría de las words del utterance.
-
-    Si la conexión se cae (red, timeout del server), reconecta sola con backoff;
-    on_error solo se llama cuando los reintentos se agotan.
+    Solo se acumulan resultados finales. Una discontinuidad descarta el turno
+    pendiente y se comunica al motor mediante on_gap(reason).
     """
 
     RECONNECT_DELAYS = (0.5, 1.0, 2.0)
@@ -148,13 +144,18 @@ class DeepgramLive:
     def __init__(self, api_key: str, model: str = "nova-3", sr: int = 16000,
                  on_utterance: Callable[[str, str | None, float], None] | None = None,
                  on_error: Callable[[Exception], None] | None = None,
-                 endpointing_ms: int = 400):
+                 endpointing_ms: int = 400,
+                 on_gap: Callable[[str], None] | None = None):
         self.api_key = api_key
         self.model = model
         self.sr = sr
         self.on_utterance = on_utterance
         self.on_error = on_error
         self.endpointing_ms = endpointing_ms
+        self.on_gap = on_gap
+        self._cancel = threading.Event()
+        self._muted = False
+        self._mute_epoch = 0
         self._ws = None
         self._rx: threading.Thread | None = None
         self._closed = False
@@ -162,7 +163,12 @@ class DeepgramLive:
         self._lock = threading.Lock()
 
     def start(self):
-        self._connect()
+        ws = self._connect()
+        with self._lock:
+            if self._cancel.is_set():
+                ws.close()
+                return
+            self._ws = ws
         self._rx = threading.Thread(target=self._recv_loop, daemon=True)
         self._rx.start()
 
@@ -174,91 +180,199 @@ class DeepgramLive:
         params = {"model": self.model, "language": "multi", "encoding": "linear16",
                   "sample_rate": str(self.sr), "channels": "1",
                   "punctuate": "true", "smart_format": "true",
-                  "interim_results": "false", "endpointing": str(self.endpointing_ms)}
-        self._ws = connect(f"{DG_WS_URL}?{urlencode(params)}",
-                           additional_headers={"Authorization": f"Token {self.api_key}"})
+                  "interim_results": "true", "utterance_end_ms": "1000", "diarize": "true",
+                  "endpointing": str(self.endpointing_ms)}
+        return connect(f"{DG_WS_URL}?{urlencode(params)}",
+                       additional_headers={"Authorization": f"Token {self.api_key}"},
+                       open_timeout=5, close_timeout=1)
 
     def _reconnect(self, gen: int, cause: Exception) -> bool:
-        """Reintenta la conexión con backoff. True si hay conexión viva (esta llamada
-        u otro hilo ya reconectó); False si se agotaron los intentos (queda cerrada)."""
-        import time
-
-        with self._lock:
-            if self._closed:
-                return False
-            if gen != self._gen:           # otro hilo ya reconectó
-                return True
-            for delay in self.RECONNECT_DELAYS:
-                time.sleep(delay)
-                try:
-                    self._connect()
-                    self._gen += 1
-                    return True
-                except Exception:  # noqa
-                    continue
-            self._closed = True
-            if self.on_error:
-                self.on_error(cause)
+        """Solo el receptor reconecta. El capturador nunca espera el backoff."""
+        if self._cancel.is_set():
             return False
+        self._report_gap("stt_connection_lost")
+        for delay in self.RECONNECT_DELAYS:
+            if self._cancel.wait(delay):
+                return False
+            try:
+                ws = self._connect()
+            except Exception:
+                continue
+            with self._lock:
+                if not self._cancel.is_set():
+                    self._ws = ws
+                    self._gen = gen + 1
+                    return True
+            ws.close()
+            return False
+        self._closed = True
+        if self.on_error:
+            self.on_error(cause)
+        return False
+
+    def _report_gap(self, reason: str) -> None:
+        if self.on_gap and not self._cancel.is_set():
+            self.on_gap(reason)
+
+    def set_capture_muted(self, muted: bool) -> None:
+        if muted and not self._muted:
+            self._mute_epoch += 1
+        self._muted = muted
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
 
     def send_np(self, samples) -> None:
-        """Manda un bloque float32 [-1,1] como PCM16. Silencio también cuenta: mantiene
-        viva la conexión (Deepgram corta tras ~10s sin audio)."""
+        """Envía PCM16. Durante reconexión se descartan frames sin reproducirlos."""
         import numpy as np
 
-        if self._closed or self._ws is None:
+        ws = self._ws
+        if self._closed or ws is None:
             return
         pcm = (np.clip(samples, -1, 1) * 32767).astype("<i2").tobytes()
-        gen = self._gen
         try:
-            self._ws.send(pcm)
-        except Exception as e:  # noqa — el chunk se pierde; la conexión se recupera
-            self._reconnect(gen, e)
+            ws.send(pcm)
+        except Exception:
+            # Despierta el receptor; la recuperación y el cambio de socket son suyos.
+            self._close_socket(ws)
+
+    @staticmethod
+    def _close_socket(ws) -> None:
+        try:
+            ws.close()
+        except Exception:
+            pass
 
     def _recv_loop(self):
         while not self._closed:
-            gen = self._gen
-            # estado del utterance en curso; se descarta si la conexión se cae
-            parts: list[str] = []
-            langs: list[str] = []
-            confs: list[float] = []
+            gen, ws = self._gen, self._ws
+            pending = _FinalResults(discontinuous=gen > 0)
+            mute_epoch = self._mute_epoch
+            cause = ConnectionError("STT connection closed")
             try:
-                for raw in self._ws:
+                for raw in ws:
+                    if self._cancel.is_set():
+                        return
                     msg = json.loads(raw)
-                    if msg.get("type") != "Results":
-                        continue
-                    alts = (msg.get("channel") or {}).get("alternatives") or [{}]
-                    alt = alts[0]
-                    text = (alt.get("transcript") or "").strip()
-                    if text:
-                        parts.append(text)
-                        confs.append(float(alt.get("confidence", 0.85) or 0.85))
-                        langs += [w["language"] for w in alt.get("words") or []
-                                  if w.get("language")]
-                    if msg.get("speech_final") and parts:
-                        utter = " ".join(parts)
-                        lang = max(set(langs), key=langs.count) if langs else None
-                        conf = sum(confs) / len(confs)
-                        parts, langs, confs = [], [], []
-                        if self.on_utterance:
-                            self.on_utterance(utter, lang, conf)
-            except Exception as e:  # noqa — conexión caída: intenta revivirla
-                if self._closed or not self._reconnect(gen, e):
-                    break
-            else:                       # el server cerró limpio (p. ej. timeout de audio)
-                if self._closed or not self._reconnect(gen, ConnectionError("closed by server")):
-                    break
+                    if self._muted or mute_epoch != self._mute_epoch:
+                        if pending.parts or pending.interim_word_end >= 0 or self._muted:
+                            pending.incomplete = True
+                        mute_epoch = self._mute_epoch
+                    turn, issue = pending.accept(msg)
+                    if issue:
+                        self._report_gap(issue)
+                    if turn and self.on_utterance:
+                        self.on_utterance(*turn)
+            except Exception as exc:
+                cause = exc
+            finally:
+                self._close_socket(ws)
+                with self._lock:
+                    if self._ws is ws:
+                        self._ws = None
+            if self._closed or not self._reconnect(gen, cause):
+                break
 
     def close(self):
+        self._cancel.set()
         self._closed = True
-        try:
-            self._ws.send(json.dumps({"type": "CloseStream"}))
-        except Exception:  # noqa
-            pass
-        try:
-            self._ws.close()
-        except Exception:  # noqa
-            pass
+        with self._lock:
+            ws = self._ws
+            self._ws = None
+        if ws is not None:
+            self._close_socket(ws)
+        if self._rx is not None and self._rx is not threading.current_thread():
+            self._rx.join(timeout=1)
+
+
+_SHARED_MEDICAL_TERMS = {"metformin", "metformina", "insulin", "insulina", "diabetes", "gerd"}
+
+
+class _FinalResults:
+    """Acumula rangos en orden dentro de un solo WebSocket mono."""
+
+    def __init__(self, discontinuous: bool = False):
+        self.parts: list[str] = []
+        self.languages: set[str] = set()
+        self.speakers: set[int] = set()
+        self.confidences: list[float] = []
+        self.last_range: tuple[float, float] | None = None
+        self.final_word_end = -1.0
+        self.interim_word_end = -1.0
+        self.incomplete = discontinuous
+
+    def accept(self, msg: dict):
+        kind = msg.get("type")
+        if kind == "UtteranceEnd":
+            boundary = msg.get("last_word_end", -1)
+            if self.parts and boundary >= self.final_word_end - 0.001:
+                return self._finish()
+            return None, None
+        if kind != "Results":
+            return None, None
+
+        alt = ((msg.get("channel") or {}).get("alternatives") or [{}])[0]
+        text = (alt.get("transcript") or "").strip()
+        words = alt.get("words") or []
+        start = float(msg.get("start", 0))
+        end = start + float(msg.get("duration", 0))
+        word_end = float(words[-1].get("end", end)) if words else end
+        if not msg.get("is_final"):
+            if text:
+                self.interim_word_end = max(self.interim_word_end, word_end)
+            return None, None
+
+        if text:
+            if self.last_range and (start < self.last_range[1] - 0.001
+                                    or (start, end) == self.last_range):
+                if (start, end) == self.last_range:
+                    if msg.get("speech_final") and self.parts:
+                        return self._finish()
+                    return None, None
+                if end <= self.last_range[1] + 0.001:
+                    return None, None
+                self.incomplete = True
+            self.last_range = (start, end)
+            if len(self.parts) < 64 and not self.incomplete:
+                self.parts.append(text)
+            elif len(self.parts) >= 64:
+                self.incomplete = True
+            if not self.parts:
+                # Mantener un marcador hasta el siguiente fin de turno.
+                self.parts.append("")
+            self.final_word_end = word_end
+            tags = {w["language"] for w in words if w.get("language")
+                    and w.get("word", "").casefold() not in _SHARED_MEDICAL_TERMS}
+            if not any(w.get("language") for w in words):
+                tags = set(alt.get("languages") or [])
+            self.languages.update(tag.lower().split("-")[0] for tag in tags)
+            self.speakers.update(w["speaker"] for w in words if w.get("speaker") is not None)
+            conf = alt.get("confidence")
+            if not self.confidences or not self.incomplete:
+                self.confidences.append(float(conf) if conf is not None else 0.0)
+        if msg.get("speech_final") and self.parts:
+            return self._finish()
+        return None, None
+
+    def _finish(self):
+        incomplete = self.incomplete or self.interim_word_end > self.final_word_end + 0.05
+        multiple_speakers = len(self.speakers) > 1
+        lang = next(iter(self.languages)) if len(self.languages) == 1 else None
+        if len(self.languages) > 1:
+            lang = "mixed"
+        turn = (" ".join(self.parts), lang, min(self.confidences))
+        self.parts.clear()
+        self.languages.clear()
+        self.speakers.clear()
+        self.confidences.clear()
+        self.incomplete = False
+        self.interim_word_end = -1.0
+        if incomplete:
+            return None, "stt_incomplete_turn"
+        if multiple_speakers:
+            return None, "stt_multiple_speakers"
+        return turn, None
 
 
 # ---------- Subtítulos VTT (gratis, vía yt-dlp) ----------
@@ -316,13 +430,13 @@ def get_segments(audio_path: str | None, vtt_path: str | None) -> list[Segment]:
         try:
             return transcribe_deepgram(audio_path, dg_key,
                                        os.getenv("DEEPGRAM_MODEL", "nova-3"))
-        except Exception as e:  # noqa
-            print(f"[stt] Deepgram falló ({e}); intento Whisper")
+        except Exception:
+            print("[stt] Deepgram falló; intento Whisper")
     if audio_path:
         try:
             return transcribe_whisper(audio_path)
-        except Exception as e:  # noqa
-            print(f"[stt] Whisper no disponible ({e}); uso subtítulos VTT")
+        except Exception:
+            print("[stt] Whisper no disponible; uso subtítulos VTT")
     if vtt_path and Path(vtt_path).exists():
         return load_vtt(vtt_path)
     raise RuntimeError("Sin backend STT: no hay key Deepgram, ni faster-whisper, ni VTT.")

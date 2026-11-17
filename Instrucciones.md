@@ -1,6 +1,6 @@
 # CLAUDE.md — Medical Interpreter Voicebot
 
-> Este archivo es contexto persistente para Claude Code. Léelo completo antes de tocar el repo. Si una decisión técnica contradice este documento, **pregunta antes de avanzar**.
+> Especificación histórica del producto. Para el prototipo Python y sus pruebas, consulta [README.md](README.md) y [ENGINE_AUDIT.md](ENGINE_AUDIT.md). Las metas de latencia y los servicios de telefonía de este documento son objetivos de diseño.
 
 ---
 

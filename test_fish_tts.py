@@ -21,10 +21,16 @@ def test_load_config_reads_fish_defaults(tmp_path, monkeypatch):
 
 def test_synthesize_falls_back_to_edge_when_fish_fails(monkeypatch):
     class DummyFishProvider:
+        def __init__(self, config):
+            pass
+
         def synthesize(self, text, lang):
             raise RuntimeError("fish speech unavailable")
 
     class DummyEdgeProvider:
+        def __init__(self, config):
+            pass
+
         def synthesize(self, text, lang):
             return np.ones(4, dtype=np.float32), 16000
 

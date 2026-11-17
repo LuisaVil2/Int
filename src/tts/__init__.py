@@ -9,14 +9,14 @@ import numpy as np
 from .common import EdgeTTSProvider, load_tts_config as _load_tts_config
 from .fish_provider import FishSpeechProvider
 
-_CONFIG_PATH = os.getenv("TTS_CONFIG_PATH", "config.yaml")
+_CONFIG_PATH = None
 _PROVIDER: Any | None = None
 
 
 def _get_provider() -> Any:
     global _PROVIDER
 
-    config = load_tts_config(_CONFIG_PATH)
+    config = load_tts_config()
     provider_name = config.get("provider", "fish")
     if provider_name == "fish":
         expected_cls = FishSpeechProvider
@@ -24,10 +24,7 @@ def _get_provider() -> Any:
         expected_cls = EdgeTTSProvider
 
     if _PROVIDER is None or type(_PROVIDER) is not expected_cls:
-        try:
-            _PROVIDER = expected_cls(config)
-        except TypeError:
-            _PROVIDER = expected_cls()
+        _PROVIDER = expected_cls(config)
     return _PROVIDER
 
 
@@ -39,21 +36,19 @@ def synthesize(text: str, lang: str) -> tuple[np.ndarray, int]:
     """text+lang -> (samples float32 mono, samplerate). Vacío si falla."""
     try:
         provider = _get_provider()
-        return provider.synthesize(text, lang)
+        samples, sr = provider.synthesize(text, lang)
+        if samples.size or isinstance(provider, EdgeTTSProvider):
+            return samples, sr
     except Exception:
-        fallback_config = load_tts_config(_CONFIG_PATH)
-        try:
-            fallback_provider = EdgeTTSProvider(fallback_config)
-        except TypeError:
-            fallback_provider = EdgeTTSProvider()
-        try:
-            return fallback_provider.synthesize(text, lang)
-        except Exception:
-            return np.zeros(0, dtype=np.float32), 16000
+        pass
+    try:
+        return EdgeTTSProvider(load_tts_config()).synthesize(text, lang)
+    except Exception:
+        return np.zeros(0, dtype=np.float32), 16000
 
 
 def load_tts_config(config_path: str | os.PathLike[str] | None = None) -> dict[str, Any]:
-    return _load_tts_config(config_path)
+    return _load_tts_config(config_path or _CONFIG_PATH)
 
 
 def benchmark_stats() -> dict[str, Any]:
@@ -64,9 +59,6 @@ def benchmark_stats() -> dict[str, Any]:
     except Exception:
         pass
     return {"provider": "edge", "initialized": False}
-
-
-initialize_tts()
 
 
 if __name__ == "__main__":
