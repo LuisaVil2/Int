@@ -59,3 +59,32 @@ def test_desktop_reviewer_saves_and_exports_with_mock_audio(tmp_path, monkeypatc
         assert "Fictional correction" not in export.read_text(encoding="utf-8")
     finally:
         root.destroy()
+
+
+def test_blind_desktop_view_excludes_other_review_and_qa_evidence(tmp_path):
+    from src.simulation.panel import Assignment, Panel
+    from src.simulation.review_ui import Reviewer
+    from src.simulation.schemas import Review
+
+    tk = pytest.importorskip("tkinter")
+    scenario = Corpus.model_validate_json(DEFAULT_CORPUS.read_bytes()).scenarios[0]
+    session = run_scenario(scenario)
+    store = ReviewStore(tmp_path / "panel.sqlite3")
+    store.add_session(session)
+    panel = Panel(store)
+    panel.assign(session.id, "a", Assignment(reviewer="reviewer-a"))
+    panel.assign(session.id, "b", Assignment(reviewer="reviewer-b"))
+    panel.view(session.id, "a", "reviewer-a").save_review(Review(
+        session_id=session.id, turn_id="t1", notes="Reviewer A's fictional notes"))
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        pytest.skip("A desktop display is unavailable")
+    root.withdraw()
+    try:
+        ui = Reviewer(root, panel.view(session.id, "b", "reviewer-b"))
+        assert not ui.saved and not ui.notes.get("1.0", "end-1c")
+        assert "decisions are hidden" in ui.evidence.get("1.0", "end-1c")
+        assert "accepted" not in ui.context.cget("text")
+    finally:
+        root.destroy()

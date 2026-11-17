@@ -1,0 +1,2509 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "schema_version": 1,
+    "mode": "fixture_replay",
+    "totals": {
+      "turns": 68,
+      "accepted": 1,
+      "scripted_mutants": 18,
+      "accepted_scripted_mutants": 0,
+      "flagged_scripted_mutants": 14,
+      "shadow_additional_accepts": 0,
+      "shadow_guarded_additional_accepts": 0,
+      "shadow_additional_scripted_mutants": 0,
+      "shadow_guarded_additional_scripted_mutants": 0,
+      "legacy_term_hits": 0,
+      "bilingual_term_hits": 0,
+      "held": 67
+    },
+    "shadow_evidence": false,
+    "hold_reasons": {
+      "confidence_review": 44,
+      "numbers_changed": 4,
+      "emergency_keyword": 1,
+      "negation_changed": 6,
+      "simulated_capture_interruption": 2,
+      "unknown_source_language": 9,
+      "dose_units_changed": 1,
+      "translation_uncertain": 2
+    },
+    "rule_flags": {
+      "numbers_changed": 4,
+      "negation_changed": 4,
+      "candidate_missing_or_unclear": 10,
+      "dose_units_changed": 2,
+      "reported_target_mismatch": 1,
+      "required_measurement_unit_missing": 1,
+      "required_medication_token_missing": 1,
+      "reported_role_mismatch": 1
+    },
+    "by_scenario": {
+      "pc-follow-up": {
+        "turns": 4,
+        "accepted": 1,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "held": 3,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "pc-pain-scale": {
+        "turns": 4,
+        "held": 4,
+        "scripted_mutants": 2,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 2,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "numbers_changed": 2
+        }
+      },
+      "em-breathing": {
+        "turns": 4,
+        "held": 4,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "emergency_keyword": 1,
+          "negation_changed": 1,
+          "simulated_capture_interruption": 1,
+          "confidence_review": 1
+        }
+      },
+      "em-fall": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "unknown_source_language": 2
+        }
+      },
+      "card-rhythm": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "unknown_source_language": 1
+        }
+      },
+      "card-pressure": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "resp-inhaler": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 2,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 2,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "dose_units_changed": 1,
+          "translation_uncertain": 1,
+          "confidence_review": 1
+        }
+      },
+      "resp-bilingual": {
+        "turns": 5,
+        "held": 5,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3,
+          "unknown_source_language": 2
+        }
+      },
+      "obs-timeline": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "numbers_changed": 1
+        }
+      },
+      "obs-bleeding": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "ped-temperature": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "ped-intake": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "simulated_capture_interruption": 1
+        }
+      },
+      "med-dose": {
+        "turns": 4,
+        "held": 4,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3,
+          "numbers_changed": 1
+        }
+      },
+      "med-name": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "negation_changed": 1
+        }
+      },
+      "allergy-penicillin": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "unknown_source_language": 1
+        }
+      },
+      "allergy-reaction": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 1,
+          "unknown_source_language": 1,
+          "translation_uncertain": 1,
+          "negation_changed": 1
+        }
+      },
+      "consent-choices": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "negation_changed": 1
+        }
+      },
+      "consent-speaker": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "mh-timeframe": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "negation_changed": 1
+        }
+      },
+      "mh-correction": {
+        "turns": 5,
+        "held": 5,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "negation_changed": 1,
+          "unknown_source_language": 2,
+          "confidence_review": 2
+        }
+      }
+    },
+    "by_direction": {
+      "en->es": {
+        "turns": 38,
+        "accepted": 1,
+        "scripted_mutants": 4,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 2,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "held": 37,
+        "hold_reasons": {
+          "confidence_review": 30,
+          "numbers_changed": 1,
+          "emergency_keyword": 1,
+          "unknown_source_language": 2,
+          "dose_units_changed": 1,
+          "negation_changed": 2
+        }
+      },
+      "es->en": {
+        "turns": 30,
+        "held": 30,
+        "scripted_mutants": 14,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 12,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 14,
+          "numbers_changed": 3,
+          "negation_changed": 4,
+          "simulated_capture_interruption": 2,
+          "unknown_source_language": 7,
+          "translation_uncertain": 2
+        }
+      }
+    },
+    "stage_latency_ms": {
+      "fixture_processing": {
+        "n": 68,
+        "p50_ms": 4.349,
+        "p95_ms": 22.8003
+      }
+    },
+    "false_holds": null,
+    "critical_errors_escaping_review": null,
+    "confirmed_major_or_critical": null,
+    "stt": null,
+    "end_to_end_latency_ms": null,
+    "reviewer_agreement": null,
+    "adjudication": null,
+    "turns": [
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "accepted",
+        "reasons": [],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t4",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "numbers_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "numbers_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "emergency_keyword"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "negation_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "simulated_capture_interruption"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-fall",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-fall",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language",
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "em-fall",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-rhythm",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "card-rhythm",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-rhythm",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-pressure",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "card-pressure",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-pressure",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-inhaler",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "dose_units_changed"
+        ],
+        "rule_flags": [
+          "dose_units_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "resp-inhaler",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "translation_uncertain"
+        ],
+        "rule_flags": [
+          "reported_target_mismatch"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "resp-inhaler",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t5",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-timeline",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-timeline",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "numbers_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "obs-timeline",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-bleeding",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-bleeding",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "obs-bleeding",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-temperature",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-temperature",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [
+          "required_measurement_unit_missing"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "ped-temperature",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-intake",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-intake",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "simulated_capture_interruption"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-intake",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "numbers_changed",
+          "dose_units_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-name",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-name",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "negation_changed",
+          "required_medication_token_missing"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "med-name",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-penicillin",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-penicillin",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "allergy-penicillin",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-reaction",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-reaction",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language",
+          "translation_uncertain"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "allergy-reaction",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-choices",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-choices",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "negation_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "consent-choices",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-speaker",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-speaker",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [
+          "reported_role_mismatch"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "consent-speaker",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-timeframe",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-timeframe",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "negation_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "mh-timeframe",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t4",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t5",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      }
+    ]
+  },
+  "candidate": {
+    "schema_version": 1,
+    "mode": "fixture_replay",
+    "totals": {
+      "turns": 68,
+      "accepted": 1,
+      "scripted_mutants": 18,
+      "accepted_scripted_mutants": 0,
+      "flagged_scripted_mutants": 16,
+      "shadow_additional_accepts": 0,
+      "shadow_guarded_additional_accepts": 0,
+      "shadow_additional_scripted_mutants": 0,
+      "shadow_guarded_additional_scripted_mutants": 0,
+      "legacy_term_hits": 10,
+      "bilingual_term_hits": 14,
+      "held": 67
+    },
+    "shadow_evidence": true,
+    "hold_reasons": {
+      "confidence_review": 42,
+      "numbers_changed": 4,
+      "emergency_keyword": 1,
+      "negation_changed": 6,
+      "simulated_capture_interruption": 2,
+      "unknown_source_language": 9,
+      "laterality_changed": 1,
+      "dose_units_changed": 1,
+      "translation_uncertain": 2,
+      "negation_scope_changed": 1
+    },
+    "rule_flags": {
+      "numbers_changed": 4,
+      "dates_changed": 1,
+      "negation_changed": 4,
+      "candidate_missing_or_unclear": 10,
+      "laterality_changed": 1,
+      "quantity_changed": 3,
+      "dose_units_changed": 2,
+      "reported_target_mismatch": 1,
+      "negation_scope_changed": 1,
+      "required_measurement_unit_missing": 1,
+      "drugs_changed": 1,
+      "required_medication_token_missing": 1,
+      "reported_role_mismatch": 1
+    },
+    "by_scenario": {
+      "pc-follow-up": {
+        "turns": 4,
+        "accepted": 1,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 6,
+        "bilingual_term_hits": 8,
+        "held": 3,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "pc-pain-scale": {
+        "turns": 4,
+        "held": 4,
+        "scripted_mutants": 2,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 2,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "numbers_changed": 2
+        }
+      },
+      "em-breathing": {
+        "turns": 4,
+        "held": 4,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "emergency_keyword": 1,
+          "negation_changed": 1,
+          "simulated_capture_interruption": 1,
+          "confidence_review": 1
+        }
+      },
+      "em-fall": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "unknown_source_language": 2
+        }
+      },
+      "card-rhythm": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "unknown_source_language": 1
+        }
+      },
+      "card-pressure": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 1,
+        "hold_reasons": {
+          "laterality_changed": 1,
+          "confidence_review": 2
+        }
+      },
+      "resp-inhaler": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 2,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 2,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "dose_units_changed": 1,
+          "translation_uncertain": 1,
+          "confidence_review": 1
+        }
+      },
+      "resp-bilingual": {
+        "turns": 5,
+        "held": 5,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3,
+          "unknown_source_language": 2
+        }
+      },
+      "obs-timeline": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 1,
+        "bilingual_term_hits": 1,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "numbers_changed": 1
+        }
+      },
+      "obs-bleeding": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "negation_scope_changed": 1
+        }
+      },
+      "ped-temperature": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "ped-intake": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "simulated_capture_interruption": 1
+        }
+      },
+      "med-dose": {
+        "turns": 4,
+        "held": 4,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 1,
+        "bilingual_term_hits": 1,
+        "hold_reasons": {
+          "confidence_review": 3,
+          "numbers_changed": 1
+        }
+      },
+      "med-name": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 1,
+        "bilingual_term_hits": 1,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "negation_changed": 1
+        }
+      },
+      "allergy-penicillin": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 1,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "unknown_source_language": 1
+        }
+      },
+      "allergy-reaction": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 1,
+        "bilingual_term_hits": 1,
+        "hold_reasons": {
+          "confidence_review": 1,
+          "unknown_source_language": 1,
+          "translation_uncertain": 1,
+          "negation_changed": 1
+        }
+      },
+      "consent-choices": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "negation_changed": 1
+        }
+      },
+      "consent-speaker": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 3
+        }
+      },
+      "mh-timeframe": {
+        "turns": 3,
+        "held": 3,
+        "scripted_mutants": 1,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 1,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "confidence_review": 2,
+          "negation_changed": 1
+        }
+      },
+      "mh-correction": {
+        "turns": 5,
+        "held": 5,
+        "scripted_mutants": 0,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 0,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 0,
+        "hold_reasons": {
+          "negation_changed": 1,
+          "unknown_source_language": 2,
+          "confidence_review": 2
+        }
+      }
+    },
+    "by_direction": {
+      "en->es": {
+        "turns": 38,
+        "accepted": 1,
+        "scripted_mutants": 4,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 3,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 10,
+        "bilingual_term_hits": 10,
+        "held": 37,
+        "hold_reasons": {
+          "confidence_review": 29,
+          "numbers_changed": 1,
+          "emergency_keyword": 1,
+          "unknown_source_language": 2,
+          "laterality_changed": 1,
+          "dose_units_changed": 1,
+          "negation_changed": 2
+        }
+      },
+      "es->en": {
+        "turns": 30,
+        "held": 30,
+        "scripted_mutants": 14,
+        "accepted_scripted_mutants": 0,
+        "flagged_scripted_mutants": 13,
+        "shadow_additional_accepts": 0,
+        "shadow_guarded_additional_accepts": 0,
+        "shadow_additional_scripted_mutants": 0,
+        "shadow_guarded_additional_scripted_mutants": 0,
+        "legacy_term_hits": 0,
+        "bilingual_term_hits": 4,
+        "hold_reasons": {
+          "confidence_review": 13,
+          "numbers_changed": 3,
+          "negation_changed": 4,
+          "simulated_capture_interruption": 2,
+          "unknown_source_language": 7,
+          "translation_uncertain": 2,
+          "negation_scope_changed": 1
+        }
+      }
+    },
+    "stage_latency_ms": {
+      "fixture_processing": {
+        "n": 68,
+        "p50_ms": 4.2806,
+        "p95_ms": 18.5515
+      },
+      "fixture_qa_after_translation": {
+        "n": 59,
+        "p50_ms": 0.4692000000000003,
+        "p95_ms": 0.9146000000000001
+      },
+      "fixture_translation": {
+        "n": 59,
+        "p50_ms": 0.048100000000000254,
+        "p95_ms": 0.14660000000000117
+      }
+    },
+    "false_holds": null,
+    "critical_errors_escaping_review": null,
+    "confirmed_major_or_critical": null,
+    "stt": null,
+    "end_to_end_latency_ms": null,
+    "reviewer_agreement": null,
+    "adjudication": null,
+    "turns": [
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "accepted",
+        "reasons": [],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-follow-up",
+        "turn": "t4",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "numbers_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "pc-pain-scale",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "dates_changed",
+          "numbers_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "emergency_keyword"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "negation_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "simulated_capture_interruption"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-breathing",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-fall",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "em-fall",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language",
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "em-fall",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-rhythm",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "card-rhythm",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-rhythm",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-pressure",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "laterality_changed"
+        ],
+        "rule_flags": [
+          "laterality_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "card-pressure",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "card-pressure",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-inhaler",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "dose_units_changed"
+        ],
+        "rule_flags": [
+          "quantity_changed",
+          "dose_units_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "resp-inhaler",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "translation_uncertain"
+        ],
+        "rule_flags": [
+          "reported_target_mismatch"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "resp-inhaler",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "resp-bilingual",
+        "turn": "t5",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-timeline",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-timeline",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "quantity_changed",
+          "numbers_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "obs-timeline",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-bleeding",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "obs-bleeding",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_scope_changed"
+        ],
+        "rule_flags": [
+          "negation_scope_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "obs-bleeding",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-temperature",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-temperature",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [
+          "required_measurement_unit_missing"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "ped-temperature",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-intake",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-intake",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "simulated_capture_interruption"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "ped-intake",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "numbers_changed"
+        ],
+        "rule_flags": [
+          "quantity_changed",
+          "numbers_changed",
+          "dose_units_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-dose",
+        "turn": "t4",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-name",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "med-name",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "drugs_changed",
+          "negation_changed",
+          "required_medication_token_missing"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "med-name",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-penicillin",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-penicillin",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "allergy-penicillin",
+        "turn": "t3",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-reaction",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "allergy-reaction",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language",
+          "translation_uncertain"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "allergy-reaction",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-choices",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-choices",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "negation_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "consent-choices",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-speaker",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "consent-speaker",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [
+          "reported_role_mismatch"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "consent-speaker",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-timeframe",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-timeframe",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [
+          "negation_changed"
+        ],
+        "scripted_mutant": true
+      },
+      {
+        "scenario": "mh-timeframe",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t1",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "negation_changed"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t2",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t3",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t4",
+        "direction": "es->en",
+        "disposition": "held",
+        "reasons": [
+          "confidence_review"
+        ],
+        "rule_flags": [],
+        "scripted_mutant": false
+      },
+      {
+        "scenario": "mh-correction",
+        "turn": "t5",
+        "direction": "en->es",
+        "disposition": "held",
+        "reasons": [
+          "unknown_source_language"
+        ],
+        "rule_flags": [
+          "candidate_missing_or_unclear"
+        ],
+        "scripted_mutant": false
+      }
+    ]
+  }
+}

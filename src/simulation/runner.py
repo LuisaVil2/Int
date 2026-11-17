@@ -15,7 +15,8 @@ from ..stt import Segment
 from ..terminology import TerminologyIndex
 from ..translate import DeepSeekTranslator, Translation
 from .qa import check_turn
-from .schemas import Interpretation, OPPOSITE, Scenario, Session, SeverityPolicy, Suggestions, TurnResult
+from .schemas import (ConfidenceEvidence, Interpretation, OPPOSITE, Scenario, Session,
+                      SeverityPolicy, StageMark, Suggestions, TurnResult)
 
 DEFAULT_CORPUS = Path(__file__).resolve().parents[2] / "data" / "simulation" / "scenarios.json"
 GLOSSARY_SPECIALTIES = {
@@ -79,9 +80,11 @@ def run_scenario(scenario: Scenario, *, adapter="fixture", allow_network=False,
     stt = TranscriptSTT()
     cloud = DeepSeekTranslator() if adapter == "deepseek" else None
     events = []
+    marks = []
+    trace = (lambda *items: marks.append(items)) if measure_latency else None
     engine = LiveEngine(lambda kind, data: events.append((kind, data)), {}, None,
                         tts_on=False, specialty=GLOSSARY_SPECIALTIES.get(
-                            scenario.specialty, scenario.specialty))
+                            scenario.specialty, scenario.specialty), trace=trace)
     glossary = TerminologyIndex.load(os.getenv("TERMINOLOGY_DIR") or
                                      DEFAULT_CORPUS.parents[1] / "terminology")
     memory = ConversationMemory()
@@ -91,6 +94,7 @@ def run_scenario(scenario: Scenario, *, adapter="fixture", allow_network=False,
     rows = []
     for index, turn in enumerate(scenario.turns):
         events.clear()
+        marks.clear()
         role = roles[turn.speaker_id]
         target = OPPOSITE[turn.source_language]
         recorded_role = turn.mock_reply.reported_role if cloud is None and turn.mock_reply else None
@@ -113,6 +117,11 @@ def run_scenario(scenario: Scenario, *, adapter="fixture", allow_network=False,
             target_language=target, event=turn.event, source=turn.text, reference=turn.reference,
             review_expected=turn.review_expected, interpretations=attempts,
             disposition="accepted" if accepted else "held", review_reasons=reasons,
+            confidence_evidence=tuple(ConfidenceEvidence.model_validate(
+                {k: v for k, v in data.items() if k != "turn_id"})
+                for kind, data in events if kind == "confidence_evidence"),
+            stage_marks=tuple(StageMark(stage=stage, offset_ms=(ns - started) / 1e6, engine_turn=engine_id)
+                              for stage, ns, engine_id in marks) if started is not None else (),
             flags=check_turn(turn, attempts, target, role, accepted=accepted, policy=policy),
             model_suggestions=tuple(item for item in suggestions.suggestions if item.turn_id == turn.id)
             if suggestions else (), elapsed_ms=elapsed,

@@ -40,3 +40,10 @@ class ConfidenceEngine:
         if score >= 80:
             return "qa_review"
         return "pause_manual_approval"
+
+    def score_turn(self, asr: float, llm: float, vocabulary_hits: int) -> int:
+        return self.score(ConfidenceInputs(
+            asr_confidence=asr, llm_confidence=llm,
+            terminology_certainty=0.9 if vocabulary_hits else 0.75,
+            glossary_match=min(1.0, vocabulary_hits / 5),
+        ))

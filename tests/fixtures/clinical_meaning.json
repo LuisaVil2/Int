@@ -1,0 +1,104 @@
+[
+  [
+    "laterality",
+    "Le medí la presión en el brazo izquierdo.",
+    "I checked your blood pressure in your right arm.",
+    "laterality_changed"
+  ],
+  [
+    "negation_scope",
+    "Tengo cólicos, pero no he tenido sangrado.",
+    "I have bleeding, but I have not had cramps.",
+    "negation_scope_changed"
+  ],
+  [
+    "drug",
+    "Tomo hidroxizina.",
+    "I take hydralazine.",
+    "drugs_changed"
+  ],
+  [
+    "words_dose",
+    "Tomo quinientos miligramos de metformina.",
+    "I take fifty milligrams of metformin.",
+    "quantity_changed"
+  ],
+  [
+    "units",
+    "I measured 5 milligrams.",
+    "Medí 5 microgramos.",
+    "quantity_changed"
+  ],
+  [
+    "route",
+    "It was given by mouth.",
+    "Se administró por vía intravenosa.",
+    "route_changed"
+  ],
+  [
+    "frequency",
+    "Tomo el medicamento dos veces al día.",
+    "I take the medicine once a day.",
+    "frequency_changed"
+  ],
+  [
+    "allergy",
+    "No soy alérgica a la penicilina.",
+    "I am allergic to penicillin.",
+    "allergy_polarity_changed"
+  ],
+  [
+    "date",
+    "Fue el 12 de octubre.",
+    "It was October 21.",
+    "dates_changed"
+  ],
+  [
+    "duration",
+    "Tengo tos desde hace tres semanas.",
+    "I have had a cough for three days.",
+    "quantity_changed"
+  ],
+  [
+    "first_person",
+    "Tomo metformina.",
+    "The patient takes metformin.",
+    "first_person_lost"
+  ],
+  [
+    "synonym_side",
+    "Le medí la presión en el brazo izquierdo.",
+    "I checked your blood pressure on your left arm.",
+    null
+  ],
+  [
+    "synonym_scope",
+    "Tengo cólicos, pero no he tenido sangrado.",
+    "I have no bleeding, though I do have cramps.",
+    null
+  ],
+  [
+    "synonym_route",
+    "I take it by mouth.",
+    "Lo tomo por vía oral.",
+    null
+  ],
+  [
+    "synonym_dose",
+    "Tomo quinientos miligramos de metformina.",
+    "I take 500 mg of metformin.",
+    null
+  ],
+  [
+    "synonym_frequency",
+    "Tomo el medicamento dos veces al día.",
+    "I take the medicine twice per day.",
+    null
+  ],
+  [
+    "synonym_date",
+    "Fue el 12 de octubre.",
+    "It was October 12.",
+    null
+  ]
+]

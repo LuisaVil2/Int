@@ -6,6 +6,7 @@ que pasan el ruteo y las comprobaciones del turno completo.
 
 - [Auditoría de estabilización, resultados de pruebas y plan de fase 2](ENGINE_AUDIT.md)
 - [Simulación ficticia y revisión humana](SIMULATION.md)
+- [Validación de fase 3: comparación, revisión independiente y audio ficticio](CLINICAL_VALIDATION.md)
 - [Especificación histórica](Instrucciones.md), [hallazgos históricos](FINDINGS.md) y [código rescatado](SALVAGE.md)
 
 Pipeline: **captura → Deepgram WebSocket o Whisper local → dirección EN↔ES → DeepSeek

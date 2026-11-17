@@ -151,6 +151,20 @@ class Interpretation(Record):
     role: Role | None = None
 
 
+class ConfidenceEvidence(Record):
+    legacy_hits: int
+    bilingual_hits: int
+    legacy_score: int
+    bilingual_score: int
+    would_accept: bool
+
+
+class StageMark(Record):
+    stage: Identifier
+    offset_ms: Annotated[float, Field(ge=0, allow_inf_nan=False)]
+    engine_turn: int | None = None
+
+
 class TurnResult(Record):
     id: Identifier
     speaker_id: Identifier
@@ -166,6 +180,8 @@ class TurnResult(Record):
     review_reasons: tuple[str, ...] = ()
     flags: tuple[Flag, ...] = ()
     model_suggestions: tuple[ModelSuggestion, ...] = ()
+    confidence_evidence: tuple[ConfidenceEvidence, ...] = ()
+    stage_marks: tuple[StageMark, ...] = ()
     elapsed_ms: Annotated[float, Field(ge=0, allow_inf_nan=False)] | None = None
 
 

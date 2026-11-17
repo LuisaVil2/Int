@@ -72,13 +72,14 @@ class _SentenceSplitter:
 
 class LiveEngine:
     def __init__(self, on_event, input_choice: dict, output_index: int | None,
-                 tts_on: bool = True, model: str = "small", specialty: str = "general"):
+                 tts_on: bool = True, model: str = "small", specialty: str = "general", *, trace=None):
         self.on_event = on_event
         self.input_choice = input_choice
         self.output_index = output_index
         self.tts_on = tts_on
         self.model = model
         self.specialty = specialty
+        self.trace = trace
         self._stop = threading.Event()
         self._speaking = threading.Event()
         self._playback_lock = threading.Lock()
@@ -134,10 +135,19 @@ class LiveEngine:
 
     def _emit(self, kind: str, **data):
         if not self._stop.is_set():
+            if kind in ("translation", "needs_review"):
+                self._trace("qa_decision", data.get("turn_id"))
             try:
                 self.on_event(kind, data)
             except Exception:
                 logger.warning("event_callback_failed")
+
+    def _trace(self, stage: str, turn_id=None):
+        if self.trace:
+            try:
+                self.trace(stage, time.perf_counter_ns(), turn_id)
+            except Exception:
+                logger.warning("trace_callback_failed")
 
     def _review(self, reason: str, **data) -> None:
         self._emit("needs_review", reason=reason, route="pause_manual_approval", **data)
@@ -150,6 +160,7 @@ class LiveEngine:
                 self._review(overflow_reason)
 
     def _on_live_text(self, text, lang, confidence):
+        self._trace("stt_finalized")
         self._enqueue(self._text_q, (text, lang, confidence), "transcript_queue_full")
 
     # ---------- captura ----------
@@ -190,6 +201,7 @@ class LiveEngine:
         before = self._playback_epoch
         muted = self._speaking.is_set()
         chunk = rec.record(FRAME).flatten().astype(np.float32)
+        self._trace("capture_frame")
         return chunk, muted or self._speaking.is_set() or before != self._playback_epoch
 
     def _capture_streaming(self, rec):
@@ -369,7 +381,7 @@ class LiveEngine:
                            translator, idx, detect_lang, memory, emerg,
                            confidence_engine, stream_tts: bool, direction_resolved=False) -> None:
         """Valida y enruta el turno completo antes de entregarlo a TTS."""
-        from .confidence import ConfidenceInputs
+        from .clinical_checks import meaning_flags
         from .translate import fidelity_issue
 
         if self._stop.is_set():
@@ -386,8 +398,11 @@ class LiveEngine:
             return
 
         hits = idx.lookup(text, self.specialty)
-        term_block = "\n".join(hits) if hits else "(sin términos relevantes)"
+        bilingual_lookup = getattr(idx, "lookup_bilingual", None)
+        prompt_hits = bilingual_lookup(text, self.specialty, lang) if bilingual_lookup else hits
+        term_block = "\n".join(prompt_hits) if prompt_hits else "(sin términos relevantes)"
         t0 = time.perf_counter()
+        self._trace("translation_started", turn_id)
         try:
             tr = translator.translate(text, lang, term_block, memory.context(limit=6))
         except Exception:
@@ -398,6 +413,7 @@ class LiveEngine:
             return
 
         lat = round((time.perf_counter() - t0) * 1000)
+        self._trace("translation_complete", turn_id)
         expected = "en" if lang == "es" else "es"
         if (tr.needs_clarification or tr.target_lang != expected or not tr.text.strip()
                 or "<unclear>" in tr.text.casefold()):
@@ -406,16 +422,19 @@ class LiveEngine:
         if issue := fidelity_issue(text, tr.text):
             self._review(issue, **review_meta)
             return
+        if anchored := next(iter(meaning_flags(text, tr.text)), None):
+            self._review(anchored[0], **review_meta)
+            return
 
-        score = confidence_engine.score(ConfidenceInputs(
-            asr_confidence=stt_conf,
-            llm_confidence=tr.confidence,
-            terminology_certainty=0.9 if hits else 0.75,
-            glossary_match=min(1.0, len(hits) / 5),
-        ))
+        score = confidence_engine.score_turn(stt_conf, tr.confidence, len(hits))
+        shadow_score = confidence_engine.score_turn(stt_conf, tr.confidence, len(prompt_hits))
         route = confidence_engine.route(score)
         if em["force_qa_review"] and route == "automatic_approval":
             route = "qa_review"
+        self._emit("confidence_evidence", turn_id=turn_id, legacy_hits=len(hits),
+                   bilingual_hits=len(prompt_hits), legacy_score=score, bilingual_score=shadow_score,
+                   would_accept=confidence_engine.route(shadow_score) == "automatic_approval"
+                   and not em["force_qa_review"])
 
         if route != "automatic_approval":
             reason = "emergency_keyword" if em["force_qa_review"] else "confidence_review"
@@ -452,10 +471,12 @@ class LiveEngine:
             if self._stop.is_set():
                 return
             try:
+                self._trace("tts_started", turn_id)
                 samples, sr = synthesize(text, lang)
                 if samples.size == 0:
                     self._review("tts_empty", turn_id=turn_id)
                     continue
+                self._trace("tts_synthesized", turn_id)
             except Exception:
                 self._review("tts_failed", turn_id=turn_id)
                 continue
@@ -484,8 +505,11 @@ class LiveEngine:
                     self._playback_epoch += 1
                     self._speaking.set()
                     sd.play(samples, sr, device=self.output_index)
+                self._trace("playback_started", turn_id)
                 self._emit("status", text="Micrófono en pausa durante la reproducción.")
                 sd.wait()
+                if not self._stop.is_set():
+                    self._trace("playback_complete", turn_id)
             except Exception:
                 self._review("audio_output_failed", turn_id=turn_id)
             finally:

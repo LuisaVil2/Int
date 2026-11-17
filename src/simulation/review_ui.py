@@ -41,7 +41,8 @@ class Reviewer:
         self.session_picker.grid(row=0, column=1, sticky="ew")
         self.session_picker.bind("<<ComboboxSelected>>", self.select_session)
         ttk.Button(bar, text="Reload", command=self.reload).grid(row=0, column=2, padx=8)
-        ttk.Button(bar, text="Export session", command=self.export).grid(row=0, column=3)
+        if not getattr(store, "blind", False):
+            ttk.Button(bar, text="Export session", command=self.export).grid(row=0, column=3)
         panes = ttk.Panedwindow(root, orient=tk.HORIZONTAL)
         panes.grid(row=1, column=0, sticky="nsew", padx=12)
         left = ttk.Frame(panes)
@@ -189,9 +190,10 @@ class Reviewer:
             button.configure(state="normal" if enabled else "disabled")
         if turn is None:
             return
+        disposition = "" if getattr(self.store, "blind", False) else f" · {turn.disposition}"
         self.context.configure(text=f"{turn.speaker_id} · {turn.role} · "
                                     f"{turn.source_language.upper()} → {turn.target_language.upper()} · "
-                                    f"{turn.event.replace('_', ' ')} · {turn.disposition}")
+                                    f"{turn.event.replace('_', ' ')}{disposition}")
         candidate = "\n\n".join(
             f"[{(item.target_language or '?').upper()}"
             f"{', ' + item.role if item.role else ''}] {item.text}" for item in turn.interpretations)
@@ -205,7 +207,10 @@ class Reviewer:
         self.fill(self.source, turn.source, readonly=True)
         self.fill(self.candidate, candidate or "No candidate returned.", readonly=True)
         self.fill(self.reference, turn.reference or "Expected disposition: review.", readonly=True)
-        self.fill(self.evidence, "\n".join(flags) or "No automated flags or suggestions.", readonly=True)
+        evidence = ("Independent review. Automated and other reviewer decisions are hidden."
+                    if getattr(self.store, "blind", False)
+                    else "\n".join(flags) or "No automated flags or suggestions.")
+        self.fill(self.evidence, evidence, readonly=True)
         self.fill(self.correction, self.review.corrected_interpretation if self.review else "")
         self.fill(self.notes, self.review.notes if self.review else "")
         saved = {error.category: error.severity for error in self.review.errors} if self.review else {}

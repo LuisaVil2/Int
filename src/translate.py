@@ -91,9 +91,16 @@ def fidelity_issues(source: str, target: str) -> tuple[str, ...]:
         return [(normalized_number(_NUMBER.match(m.group()).group()), m.lastgroup)
                 for m in _DOSE.finditer(text)]
 
+    numeric_change = numbers(source) != numbers(target)
+    dose_change = doses(source) != doses(target)
+    if numeric_change or dose_change:
+        from .clinical_checks import equivalent_quantities
+
+        if equivalent_quantities(source, target):
+            numeric_change = dose_change = False
     checks = (
-        ("numbers_changed", numbers(source) != numbers(target)),
-        ("dose_units_changed", doses(source) != doses(target)),
+        ("numbers_changed", numeric_change),
+        ("dose_units_changed", dose_change),
         ("negation_changed", bool(_NEGATION.search(source)) != bool(_NEGATION.search(target))),
     )
     return tuple(rule for rule, changed in checks if changed)

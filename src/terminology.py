@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import csv
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -16,6 +17,7 @@ class Term:
     src: str          # término/keyword que dispara el match (lower)
     line: str         # línea formateada para el prompt
     specialty: str
+    spanish: str = ""
 
 
 class TerminologyIndex:
@@ -35,7 +37,7 @@ class TerminologyIndex:
                     continue
                 notes = r.get("notes", "")
                 line = f"- {en} = {es}" + (f"  ({notes})" if notes else "")
-                terms.append(Term(en.lower(), line, r.get("specialty", "general")))
+                terms.append(Term(en.lower(), line, r.get("specialty", "general"), es))
 
         a = root / "abbreviations.csv"
         if a.exists():
@@ -44,7 +46,8 @@ class TerminologyIndex:
                 if not ab:
                     continue
                 line = f"- {ab} = {r.get('expansion_en','')} / {r.get('expansion_es','')}"
-                terms.append(Term(ab.lower(), line, r.get("specialty", "general")))
+                terms.append(Term(ab.lower(), line, r.get("specialty", "general"),
+                                  r.get("expansion_es", "")))
 
         d = root / "drug_names.csv"
         if d.exists():
@@ -55,7 +58,7 @@ class TerminologyIndex:
                 notes = r.get("notes", "")
                 line = f"- {brand} ({generic}) = {r.get('name_es','')}" + (f"  ({notes})" if notes else "")
                 # se dispara tanto por marca como por genérico
-                terms.append(Term(brand.lower(), line, "drug"))
+                terms.append(Term(brand.lower(), line, "drug", r.get("name_es", "")))
                 if generic:
                     terms.append(Term(generic.lower(), line, "drug"))
 
@@ -63,6 +66,21 @@ class TerminologyIndex:
 
     def lookup(self, transcript: str, specialty: str | None = None, limit: int = 25) -> list[str]:
         text = transcript.lower()
+        return self._lookup(lambda term: _contains(text, term.src), specialty, limit)
+
+    def lookup_bilingual(self, transcript: str, specialty: str | None, language: str | None,
+                         limit: int = 25) -> list[str]:
+        if language != "es":
+            return self.lookup(transcript, specialty, limit)
+        text, folded = transcript.lower(), _fold(transcript)
+
+        def matches(term):
+            return (_contains(text, term.src)
+                    or bool(term.spanish and re.search(rf"(?<!\w){re.escape(_fold(term.spanish))}(?!\w)", folded)))
+
+        return self._lookup(matches, specialty, limit)
+
+    def _lookup(self, matches, specialty, limit):
         hits: list[str] = []
         seen: set[str] = set()
         # "general" (o sin especialidad) = sin filtro: todas las especialidades son
@@ -73,12 +91,17 @@ class TerminologyIndex:
             if narrow and t.specialty not in (specialty, "general", "drug"):
                 continue
             # match por palabra/substring del keyword
-            if _contains(text, t.src) and t.line not in seen:
+            if matches(t) and t.line not in seen:
                 seen.add(t.line)
                 hits.append(t.line)
                 if len(hits) >= limit:
                     break
         return hits
+
+
+def _fold(text: str) -> str:
+    return "".join(c for c in unicodedata.normalize("NFD", text.casefold())
+                   if unicodedata.category(c) != "Mn")
 
 
 def _read(path: Path) -> list[dict]:

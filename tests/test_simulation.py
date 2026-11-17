@@ -83,12 +83,13 @@ def test_exact_flags_and_held_turns(corpus, case_id, turn_id, rule):
     assert rule in {flag.rule for flag in turn.flags}
 
 
-def test_scope_and_laterality_remain_human_judgments(corpus):
+def test_scope_and_laterality_are_held_with_specific_evidence(corpus):
     scope = runner.run_scenario(lookup(corpus, "obs-bleeding")).turns[1]
     side = runner.run_scenario(lookup(corpus, "card-pressure")).turns[0]
-    for turn in (scope, side):
+    for turn, rule in ((scope, "negation_scope_changed"), (side, "laterality_changed")):
         assert turn.interpretations[0].text != turn.reference
-        assert turn.flags == ()
+        assert rule in {flag.rule for flag in turn.flags}
+        assert turn.disposition == "held" and rule in turn.review_reasons
 
 
 @pytest.mark.parametrize("options", [{"adapter": "deepseek"}, {"audio": "edge"}])

@@ -7,6 +7,7 @@ from collections import Counter
 from collections.abc import Iterable
 
 from ..translate import fidelity_issues
+from ..clinical_checks import meaning_flags
 from .schemas import Category, Flag, Interpretation, Review, Session, SeverityPolicy, Utterance
 
 _RULES: dict[str, Category] = {
@@ -36,6 +37,8 @@ def check_turn(turn: Utterance, interpretations: tuple[Interpretation, ...], tar
         add("wrong_direction", "reported_target_mismatch")
     if rendered and all(item.target_language == target for item in rendered):
         candidate = " ".join(item.text for item in rendered)
+        for rule, category in meaning_flags(turn.text, candidate, turn.reference):
+            add(category, rule)
         if turn.reference:
             for rule in fidelity_issues(turn.reference, candidate):
                 add(_RULES[rule], rule)
