@@ -16,12 +16,9 @@ env_vars = {
     'DEEPSEEK_MODEL': os.getenv('DEEPSEEK_MODEL'),
     'DEEPGRAM_API_KEY': os.getenv('DEEPGRAM_API_KEY'),
     'DEEPGRAM_MODEL': os.getenv('DEEPGRAM_MODEL'),
-    'DEEPGRAM_LANGUAGES': os.getenv('DEEPGRAM_LANGUAGES'),
+    'DEEPGRAM_LIVE_MODEL': os.getenv('DEEPGRAM_LIVE_MODEL'),
     'FISH_API_KEY': os.getenv('FISH_API_KEY'),
     'FISH_VOICE_ID': os.getenv('FISH_VOICE_ID'),
-    'ELEVENLABS_API_KEY': os.getenv('ELEVENLABS_API_KEY'),
-    'ELEVENLABS_VOICE_ID': os.getenv('ELEVENLABS_VOICE_ID'),
-    'ELEVENLABS_MODEL': os.getenv('ELEVENLABS_MODEL'),
     'FFMPEG_PATH': os.getenv('FFMPEG_PATH'),
     'TERMINOLOGY_DIR': os.getenv('TERMINOLOGY_DIR'),
     'DEFAULT_SPECIALTY': os.getenv('DEFAULT_SPECIALTY'),
@@ -31,6 +28,6 @@ env_vars = {
 
 for key, value in env_vars.items():
     if value:
-        print(f"{key:<25} ✓ SET (value length: {len(str(value))})")
+        print(f"{key:<25} ✓ SET")
     else:
         print(f"{key:<25} ✗ EMPTY")

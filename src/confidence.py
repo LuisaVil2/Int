@@ -6,6 +6,7 @@ en un score 0-100 y rutear: aprobación automática / revisión QA / pausa manua
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 
 
 @dataclass(slots=True)
@@ -27,8 +28,11 @@ class ConfidenceEngine:
     }
 
     def score(self, i: ConfidenceInputs) -> int:
-        return round(sum(max(0.0, min(1.0, getattr(i, k))) * w
-                         for k, w in self.weights.items()) * 100)
+        values = {key: getattr(i, key) for key in self.weights}
+        if any(not isfinite(value) for value in values.values()):
+            return 0
+        return round(sum(max(0.0, min(1.0, values[key])) * weight
+                         for key, weight in self.weights.items()) * 100)
 
     def route(self, score: int) -> str:
         if score >= 95:

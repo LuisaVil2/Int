@@ -3,6 +3,7 @@ NUNCA mata el resto de la sesión. Usa LiveEngine._process_one() directamente
 (extraído del while-loop) en vez de manejar hilos/audio real -- más rápido y estable.
 """
 import queue
+import sys
 import types
 
 import numpy as np
@@ -33,7 +34,7 @@ def test_deepgram_failure_falls_back_to_whisper_per_utterance(monkeypatch):
             return [seg], info
 
     monkeypatch.setattr("src.stt.transcribe_np_deepgram", fake_dg)
-    monkeypatch.setattr("faster_whisper.WhisperModel", FakeWhisperModel)
+    monkeypatch.setitem(sys.modules, "faster_whisper", types.SimpleNamespace(WhisperModel=FakeWhisperModel))
 
     text, lang, conf, speaker, backend = engine._transcribe(np.zeros(100, dtype=np.float32), "fake-dg-key")
     assert backend == "whisper"
@@ -54,7 +55,7 @@ def test_whisper_model_loaded_lazily_and_cached_once(monkeypatch):
             info = types.SimpleNamespace(language="en")
             return [seg], info
 
-    monkeypatch.setattr("faster_whisper.WhisperModel", FakeWhisperModel)
+    monkeypatch.setitem(sys.modules, "faster_whisper", types.SimpleNamespace(WhisperModel=FakeWhisperModel))
 
     assert engine._whisper_model is None
     engine._transcribe(np.zeros(10, dtype=np.float32), dg_key=None)

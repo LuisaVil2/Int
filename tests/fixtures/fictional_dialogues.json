@@ -1,0 +1,95 @@
+[
+  {
+    "id": "dose_negated",
+    "source": "I did not take 2.5 mg of warfarin.",
+    "lang": "en",
+    "target": "No tomé 2,5 mg de warfarina.",
+    "reject": [
+      "Tomé 2,5 mg de warfarina.",
+      "No tomé 25 mg de warfarina.",
+      "No tomé 2,5 g de warfarina.",
+      "No tomé warfarina."
+    ]
+  },
+  {
+    "id": "allergy_question",
+    "source": "Are you allergic to penicillin?",
+    "lang": "en",
+    "target": "¿Es usted alérgico a la penicilina?"
+  },
+  {
+    "id": "allergy_reply",
+    "source": "Sí, soy alérgica a la penicilina.",
+    "lang": "es",
+    "target": "Yes, I am allergic to penicillin."
+  },
+  {
+    "id": "no_chest_pain",
+    "source": "No tengo dolor de pecho.",
+    "lang": "es",
+    "target": "I do not have chest pain.",
+    "reject": [
+      "I have chest pain."
+    ],
+    "keyword": "chest_pain"
+  },
+  {
+    "id": "breathing",
+    "source": "No puedo respirar.",
+    "lang": "es",
+    "target": "I cannot breathe.",
+    "keyword": "difficulty_breathing"
+  },
+  {
+    "id": "short_en",
+    "source": "Yes.",
+    "lang": "en",
+    "target": "Sí."
+  },
+  {
+    "id": "short_es",
+    "source": "Sí.",
+    "lang": "es",
+    "target": "Yes."
+  },
+  {
+    "id": "short_shared",
+    "source": "No.",
+    "lang": null
+  },
+  {
+    "id": "loanword",
+    "source": "No tomé metformin.",
+    "lang": "es",
+    "target": "I did not take metformin."
+  },
+  {
+    "id": "rapid_switch",
+    "source": "Did you take your medication? No tomé metformina. Yes. Sí.",
+    "lang": "mixed",
+    "directions": [
+      "en",
+      "es",
+      "en",
+      "es"
+    ]
+  },
+  {
+    "id": "unresolved_switch",
+    "source": "Did you take it no tomé la dosis",
+    "lang": "mixed",
+    "directions": [
+      null
+    ]
+  },
+  {
+    "id": "frequencies",
+    "source": "Tomo 5 mg 2 veces al día.",
+    "lang": "es",
+    "target": "I take 5 mg 2 times a day.",
+    "reject": [
+      "I take 5 mg once a day.",
+      "I take 2 mg 5 times a day."
+    ]
+  }
+]

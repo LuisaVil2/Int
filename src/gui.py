@@ -34,6 +34,8 @@ class App:
                                      values=[d["label"] for d in self.inputs])
         self.in_combo.grid(row=0, column=1, sticky="w", padx=6)
         # default: primer loopback
+        if self.inputs:
+            self.in_combo.current(0)
         for i, d in enumerate(self.inputs):
             if d["kind"] == "loopback":
                 self.in_combo.current(i); break
@@ -82,6 +84,7 @@ class App:
         self.log.tag_config("err", foreground="#c62828")
 
         self.root.after(100, self._drain)
+        root.protocol("WM_DELETE_WINDOW", self._close)
 
     @staticmethod
     def _specialties() -> list[str]:
@@ -106,13 +109,19 @@ class App:
             except queue.Empty:
                 break
             if kind == "src":
-                self._append(f"[{data['lang'].upper()}] {data['text']}\n", "src")
+                self._append(f"[{(data['lang'] or '?').upper()}] {data['text']}\n", "src")
             elif kind == "translation":
                 arrow = f"{data['src_lang'].upper()}→{data['tgt_lang'].upper()}"
                 lat = f"{data['latency_ms']}ms"
                 if data.get("first_ms"):
                     lat = f"1ª frase {data['first_ms']}ms · total {lat}"
                 self._append(f"  ➜ [{arrow}] {data['text']}   ({lat})\n\n", "tr")
+            elif kind == "needs_review":
+                self._append(f"⚠ Revisión requerida ({data['reason']})\n", "err")
+                if data.get("emergency_labels"):
+                    self._append("   Coincidencia con términos de emergencia.\n", "err")
+                if data.get("draft"):
+                    self._append(f"   Borrador: {data['draft']}\n\n", "err")
             elif kind == "status":
                 self.status.config(text=data["text"]); self._append(f"· {data['text']}\n", "st")
             elif kind == "error":
@@ -124,7 +133,11 @@ class App:
         self.log.see("end")
 
     def start(self):
-        in_choice = self.inputs[self.in_combo.current()]
+        selected = self.in_combo.current()
+        if selected < 0:
+            self._append("Seleccione un dispositivo de entrada.\n", "err")
+            return
+        in_choice = self.inputs[selected]
         out_index = self.outputs[self.out_combo.current()]["index"] if self.outputs else None
         self.engine = LiveEngine(self._on_event, in_choice, out_index,
                                  tts_on=self.tts_var.get(), model=self.model_var.get(),
@@ -133,7 +146,7 @@ class App:
         self.start_btn.config(state="disabled")
         self.stop_btn.config(state="normal")
         self.in_combo.config(state="disabled"); self.out_combo.config(state="disabled")
-        self._append("=== BOT ACTIVO — reproduce el video de YouTube ===\n", "st")
+        self._append("=== BOT ACTIVO — use una conversación simulada ===\n", "st")
 
     def stop(self):
         if self.engine:
@@ -143,6 +156,11 @@ class App:
         self.in_combo.config(state="readonly"); self.out_combo.config(state="readonly")
         self.status.config(text="Apagado")
         self._append("=== BOT APAGADO ===\n\n", "st")
+
+    def _close(self):
+        if self.engine:
+            self.engine.stop()
+        self.root.destroy()
 
 
 def main():

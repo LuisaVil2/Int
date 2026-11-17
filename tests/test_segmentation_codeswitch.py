@@ -54,3 +54,11 @@ def test_normalize_turns_respects_speaker_boundary():
     assert len(turns) == 2
     assert turns[0].speaker == 0
     assert turns[1].speaker == 1
+
+
+def test_equal_speaker_tags_from_separate_segments_do_not_imply_same_identity():
+    turns = normalize_turns([
+        Segment(0, "I have a headache.", "en", speaker=0),
+        Segment(1, "I see, tell me more.", "en", speaker=0),
+    ])
+    assert len(turns) == 2

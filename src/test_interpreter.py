@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 from .stt import get_segments
 from .segmentation import normalize_turns
 from .terminology import TerminologyIndex
-from .emergency import EmergencyClassifier, ALERT_EN
+from .emergency import EmergencyClassifier
 from .confidence import ConfidenceEngine, ConfidenceInputs
 from .memory import ConversationMemory
 
@@ -72,27 +72,30 @@ def main():
         emer = emerg_clf.classify(t.text)
         row["emergency"] = ",".join(emer["labels"]) if emer["labels"] else ""
 
-        if translator:
+        if t.lang is None:
+            row.update(unclear=True, route="pause_manual_approval")
+        elif translator:
             t0 = time.perf_counter()
             try:
                 tr = translator.translate(t.text, t.lang, term_block, memory.context())
                 out_text = tr.text
-                # §11: si emergencia, añade alerta en EN para el proveedor
-                if emer["is_emergency"] and tr.target_lang == "en" and "<UNCLEAR>" not in out_text:
-                    out_text = f"{out_text}  {ALERT_EN}"
                 lat = round((time.perf_counter() - t0) * 1000)
                 score = conf_engine.score(ConfidenceInputs(
                     asr_confidence=0.9, llm_confidence=tr.confidence,
                     terminology_certainty=0.95 if hits else 0.85,
                     glossary_match=1.0 if hits else 0.8))
-                route = "qa_review" if emer["force_qa_review"] else conf_engine.route(score)
+                route = conf_engine.route(score)
+                if tr.needs_clarification:
+                    route = "pause_manual_approval"
+                elif emer["force_qa_review"] and route == "automatic_approval":
+                    route = "qa_review"
                 row.update(out=out_text, target_lang=tr.target_lang, confidence=tr.confidence,
                            unclear=tr.needs_clarification, route=route, latency_ms=lat)
                 row["qa_score"] = score
-                if not tr.needs_clarification:
-                    memory.add_turn(t.speaker, t.lang, t.text, tr.text)
-            except Exception as e:  # noqa
-                row["out"] = f"[ERROR: {e}]"
+                if route == "automatic_approval":
+                    memory.add_turn(None, t.lang, t.text, tr.text)
+            except Exception:
+                row.update(out="<UNCLEAR>", unclear=True, route="pause_manual_approval")
         rows.append(row)
         _print_row(row)
 
@@ -127,8 +130,8 @@ def _write_outputs(rows: list[dict]):
                   f"| {r['latency_ms'] or ''} |")
     (out / "result.md").write_text("\n".join(md), encoding="utf-8")
     n_unclear = sum(1 for r in rows if r.get("unclear"))
-    n_ok = sum(1 for r in rows if r.get("out") and not r.get("unclear") and "ERROR" not in (r["out"] or ""))
-    print(f"\n== {n_ok} OK · {n_unclear} <UNCLEAR> · {len(rows)} turnos -> out/result.md ==")
+    n_ok = sum(1 for r in rows if r.get("route") == "automatic_approval")
+    print(f"\n== {n_ok} aprobación heurística · {n_unclear} <UNCLEAR> · {len(rows)} turnos -> out/result.md ==")
 
 
 if __name__ == "__main__":

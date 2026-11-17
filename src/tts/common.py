@@ -25,10 +25,7 @@ class BaseTTSProvider:
 
 
 class EdgeTTSProvider(BaseTTSProvider):
-    VOICES = {
-        "es": os.getenv("TTS_VOICE_ES", "es-MX-DaliaNeural"),
-        "en": os.getenv("TTS_VOICE_EN", "en-US-AriaNeural"),
-    }
+    VOICES = {"es": "es-MX-DaliaNeural", "en": "en-US-AriaNeural"}
 
     def _ffmpeg(self) -> str:
         return os.getenv("FFMPEG_PATH", "ffmpeg")
@@ -37,13 +34,14 @@ class EdgeTTSProvider(BaseTTSProvider):
         import edge_tts
 
         buf = bytearray()
-        async for chunk in edge_tts.Communicate(text, voice).stream():
-            if chunk["type"] == "audio":
-                buf.extend(chunk["data"])
+        async with asyncio.timeout(30):
+            async for chunk in edge_tts.Communicate(text, voice).stream():
+                if chunk["type"] == "audio":
+                    buf.extend(chunk["data"])
         return bytes(buf)
 
     def synthesize(self, text: str, lang: str) -> tuple[np.ndarray, int]:
-        voice = self.VOICES.get(lang, self.VOICES["en"])
+        voice = os.getenv(f"TTS_VOICE_{lang.upper()}") or self.VOICES[lang]
         mp3 = asyncio.run(self._mp3_bytes(text, voice))
         if not mp3:
             return np.zeros(0, dtype=np.float32), 16000
@@ -66,6 +64,7 @@ class EdgeTTSProvider(BaseTTSProvider):
             input=mp3,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            timeout=30,
         )
         if proc.returncode != 0 or not proc.stdout:
             return np.zeros(0, dtype=np.float32), 16000

@@ -2,7 +2,7 @@
 
 Sigue la intención de Instrucciones.md §"Logging": líneas JSON con session_id/turn_id,
 solo metadatos (idioma, latencia, confianza, error codes) — NUNCA el contenido de los
-turnos en producción. Contenido real solo bajo DEBUG_TRANSCRIPTS=true (flag existente).
+turnos en producción. Los turnos nunca se escriben en los logs.
 
 Usa solo `logging` de stdlib (sin dependencias nuevas).
 """
@@ -30,8 +30,6 @@ class JsonFormatter(logging.Formatter):
         extra = getattr(record, "meta", None)
         if extra:
             payload.update(extra)
-        if record.exc_info:
-            payload["exc_info"] = self.formatException(record.exc_info)
         return json.dumps(payload, ensure_ascii=False)
 
 
@@ -41,8 +39,9 @@ def configure_logging(log_dir: str | os.PathLike[str] = "logs", level: int = log
     if _CONFIGURED:
         return
 
-    root = logging.getLogger()
+    root = logging.getLogger("src")
     root.setLevel(level)
+    root.propagate = False
 
     path = Path(log_dir)
     path.mkdir(parents=True, exist_ok=True)
@@ -68,10 +67,6 @@ def new_session_id() -> str:
 
 def log_turn(logger: logging.Logger, *, session_id: str, turn_id: int,
              source_text: str = "", output_text: str = "", **meta) -> None:
-    """Loguea metadatos de un turno. El texto real solo se incluye si
-    DEBUG_TRANSCRIPTS=true (flag ya existente en .env para dev local)."""
+    """Loguea solo metadatos; conserva los argumentos de texto por compatibilidad."""
     payload = {"session_id": session_id, "turn_id": turn_id, **meta}
-    if os.getenv("DEBUG_TRANSCRIPTS", "").lower() == "true":
-        payload["source_text"] = source_text
-        payload["output_text"] = output_text
     logger.info("turn", extra={"meta": payload})
